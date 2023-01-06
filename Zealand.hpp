@@ -28,13 +28,13 @@ class Zealand
 
         Vector3 getCenter(unsigned long block);
         int getLevel(unsigned long block);
-        double getVolume(Blockset region);
+        double getVolume(const Blockset& region);
         AlignedBox3 getAlignedBox(unsigned long block);
         Block8 getChildren(unsigned long block);
 
     protected:
 
-        int scale;
+        double scale;
         const static int MAX_LEVEL = 20;
 
         unsigned long remove_level[MAX_LEVEL + 1];

@@ -74,11 +74,6 @@ AlignedBox3 Zealand::getAlignedBox(unsigned long block)
 
     double block_size = block_sizes[level];
 
-    // std::cout << std::bitset<64>(block) << std::endl;
-    // std:: cout << x << std::endl;
-    // std:: cout << y << std::endl;
-    // std:: cout << z << std::endl;
-
     min[0] = x*block_size - block_sizes[0];
     min[1] = y*block_size - block_sizes[0];
     min[2] = z*block_size - block_sizes[0];
@@ -117,33 +112,7 @@ bool Zealand::covers(const Sphere3& sphere, const AlignedBox3& box)
     return true;
 }
 
-// Coverage Zealand::intersect(const Sphere3& sphere, int max_level)
-// {
-
-// }
-
-// Coverage Zealand::intersect(Coverage& coverage, const Sphere3& sphere, int level, int max_level)
-// {
-//     // First element is vector of partially covered blocks
-//     // Second element is vector of fully covered blocks
-//     Coverage new_coverage;
-
-//     // Loop over each partially covered block
-//     for (int i = 0; i < coverage[0].size(); i++)
-//     {
-//         AlignedBox3 box = getAlignedBox(coverage[0][i]);
-//         gte::TIQuery<double,AlignedBox3,Sphere3> query;
-//         if (query(box, sphere).intersect)
-//         {
-//             if (covers(sphere,box))
-//                 new_coverage[1].push_back(coverage[0][i]);
-//             else
-//                 coverage[0].push_back(coverage[1][i]);
-//         }
-//     }
-// }
-
-double Zealand::getVolume(Blockset region)
+double Zealand::getVolume(const Blockset& region)
 {
     double volume = 0;
     for (int i = 0; i < region.size(); i++)
@@ -164,7 +133,6 @@ void Zealand::refine(Coverage& coverage, const Sphere3& sphere)
     // Loop over each partially covered block
     for (int i = 0; i < coverage[0].size(); i++)
     {
-        // std::cout << "Loop 1, partial block " << i << std::endl;
         // Generate 8 children of each partially covered block
         Block8 children = getChildren(coverage[0][i]);
         // Check coverage status of each child
