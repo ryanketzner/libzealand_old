@@ -74,10 +74,10 @@ AlignedBox3 Zealand::getAlignedBox(unsigned long block)
 
     double block_size = block_sizes[level];
 
-    std::cout << std::bitset<64>(block) << std::endl;
-    std:: cout << x << std::endl;
-    std:: cout << y << std::endl;
-    std:: cout << z << std::endl;
+    // std::cout << std::bitset<64>(block) << std::endl;
+    // std:: cout << x << std::endl;
+    // std:: cout << y << std::endl;
+    // std:: cout << z << std::endl;
 
     min[0] = x*block_size - block_sizes[0];
     min[1] = y*block_size - block_sizes[0];
@@ -92,13 +92,11 @@ AlignedBox3 Zealand::getAlignedBox(unsigned long block)
 
 Block8 Zealand::getChildren(unsigned long block)
 {
-    int level = getLevel(block);
-    block = block & remove_level[level];
-
     Block8 children;
-    for (int i = 0; i < 8; i++)
+    for (unsigned long i = 0; i < 8; i++)
     {
-        children[i] = block | generate_children[level][i];
+        // Shift left and or with child number
+        children[i] = (block << 3) | i;
     }
     return children;
 } 
@@ -145,10 +143,23 @@ bool Zealand::covers(const Sphere3& sphere, const AlignedBox3& box)
 //     }
 // }
 
+double Zealand::getVolume(Blockset region)
+{
+    double volume = 0;
+    for (int i = 0; i < region.size(); i++)
+    {
+        int level = getLevel(region[i]);
+        volume = volume + pow(block_sizes[level],3);
+    }
+    return volume;
+}
+
 void Zealand::refine(Coverage& coverage, const Sphere3& sphere)
 {
     Blockset new_partial;
     Blockset uncovered;
+
+    gte::TIQuery<double,AlignedBox3,Sphere3> query;
 
     // Loop over each partially covered block
     for (int i = 0; i < coverage[0].size(); i++)
@@ -160,41 +171,19 @@ void Zealand::refine(Coverage& coverage, const Sphere3& sphere)
         for (int j = 0; j < 8; j++)
         {
             AlignedBox3 box = getAlignedBox(children[j]);
-            gte::TIQuery<double,AlignedBox3,Sphere3> query;
 
             if (query(box, sphere).intersect)
             {
                 if (covers(sphere,box))
-                {
-                    // std::cout << "Covered child block " << j << std::endl;
                     coverage[1].push_back(children[j]);
-                }
                 else
-                {
-                    // std::cout << "Intersected child block " << j << std::endl;
                     new_partial.push_back(children[j]);
-                }
             }
-            else
-            {
-                uncovered.push_back(children[j]);
-            }
-            // std::cout << "Did not intersect child box " << j << std::endl;
-            // std::cout << "Box min: " << box.min[0] << ", " << "Box max: " << box.max[0] <<std::endl;
         }
     }
+
     // Update partial coverage blockset
     coverage[0] = new_partial;
-
-    std::cout << "Uncovered blocks: " << std::endl;
-    for (int i = 0; i < uncovered.size(); i++)
-        std::cout << std::bitset<64>(uncovered[i]) << ", ";
-    
-    std::cout << "Partially covered blocks: " << std::endl;
-    for (int i = 0; i < new_partial.size(); i++)
-        std::cout << std::bitset<64>(new_partial[i]) << ", ";
-
-    std::cout << std::endl;
 
     return;
 }

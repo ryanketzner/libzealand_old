@@ -28,6 +28,7 @@ class Zealand
 
         Vector3 getCenter(unsigned long block);
         int getLevel(unsigned long block);
+        double getVolume(Blockset region);
         AlignedBox3 getAlignedBox(unsigned long block);
         Block8 getChildren(unsigned long block);
 
