@@ -59,8 +59,41 @@ Rangeset Zealand::toIntervalBounds(const Blockset& blockset)
     return intervals;
 }
 
-std::vector<std::vector<unsigned long>> Zealand::toIntervals(const Rangeset& interval_bounds, int max_multiplicity)
+// Convert range representation to points
+// level is kept the same
+// assumes range set is still ordered start, stop, ... , start, stop
+// as if it were just produced by toIntervalBounds function
+Blockset Zealand::collapse(const Rangeset& rangeset)
 {
+    Blockset blockset;
+    for (int i = 0; i < rangeset.size() - 1; i += 2)
+    {
+        for (unsigned long j = rangeset[i].first; j <= rangeset[i+1].first; j++)
+        {
+            blockset.push_back(j);
+        }
+    }
+
+    // Q: RVO performed here?
+    return blockset;
+}
+
+Rangeset Zealand::intervalSetToRangeSet(const Intervalset& intervals)
+{
+    Rangeset ranges;
+
+    for (int i = 0; i < intervals.size(); i++)
+    {
+        ranges.push_back({intervals[i][0],0}); // open paren
+        ranges.push_back({intervals[i][1],1}); // close paren
+    }
+
+    return ranges;
+}
+
+std::vector<std::vector<unsigned long>> Zealand::toIntervals(const Rangeset& interval_bounds)
+{
+    int max_multiplicity = interval_bounds.size()/2;
     std::vector<std::vector<unsigned long>> multiplicities(max_multiplicity);
 
     bool run = false;

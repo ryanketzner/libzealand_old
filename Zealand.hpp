@@ -18,6 +18,8 @@ using Block8 = std::array<unsigned long,8>;
 using Coverage = std::array<Blockset,2>;
 using Range = std::pair<unsigned long, bool>;
 using Rangeset = std::vector<Range>;
+using Interval = std::array<unsigned long, 2>;
+using Intervalset = std::vector<Interval>;
 
 class Zealand
 {
@@ -89,11 +91,14 @@ class Zealand
         unsigned long getLargestChild(unsigned long block, int depth);
         unsigned long getSmallestChild(unsigned long block, int depth);
 
-        std::vector<std::vector<unsigned long>> toIntervals(const Rangeset& interval_bounds, int max_multiplicity);
+        std::vector<std::vector<unsigned long>> toIntervals(const Rangeset& interval_bounds);
         Rangeset toIntervalBounds(const Blockset& blockset);
 
         Range getRangeStart(unsigned long block, int depth);
         Range getRangeStop(unsigned long block, int depth);
+
+        Blockset collapse(const Rangeset& rangeset);
+        Rangeset intervalSetToRangeSet(const Intervalset& intervals);
 
 
         // Public data members

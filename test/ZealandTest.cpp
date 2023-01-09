@@ -422,20 +422,86 @@ TEST_F(ZealandTest, TestCollapse)
     //     EXPECT_EQ(instance_.getLevel(full_9[i]),level);
 }
 
+// This is not a real test
 TEST_F(ZealandTest, TestToIntervals)
 {
     int max_multiplicity = 5;
 
     //Rangeset interval_bounds({{0,0},{0,0},{3,1},{4,0},{5,0},{5,1},{6,0},{6,1},{7,1},{15,0},{15,1},{15,1}});
     Rangeset interval_bounds({{0,0},{3,1},{4,0},{5,0},{5,1},{6,0},{6,1},{7,1},{9,0},{9,1},{15,0},{15,1}});
-    
 
-    instance_.toIntervals(interval_bounds,max_multiplicity);
+
+    instance_.toIntervals(interval_bounds);
 
     EXPECT_TRUE(1);
 }
 
+TEST_F(ZealandTest, TestToIntervals_2)
+{
+    Intervalset intervals({{0,45},{0,7},{7,30},{29,40},{0,5},{0,6},{0,11},{50,51}});
+    Rangeset interval_bounds = instance_.intervalSetToRangeSet(intervals);
+    int max_multiplicity = intervals.size();
+    std::sort(interval_bounds.begin(),interval_bounds.end());
 
+    std::vector<std::vector<unsigned long>> multiplicities;
+    multiplicities = instance_.toIntervals(interval_bounds);
+
+    std::vector<std::vector<unsigned long>> expected_multiplicities({{41,45,50,51},{12,28,31,40},{8,11,29,30},{6,7},{0,5},{},{},{}});
+
+    EXPECT_EQ(multiplicities, expected_multiplicities);
+}
+
+TEST_F(ZealandTest, TestToIntervals_3)
+{
+    Intervalset intervals({{0,45},{0,7},{7,30},{29,40},{0,5},{0,6},{0,11},{50,51},{4,7},{5,5}});
+    Rangeset interval_bounds = instance_.intervalSetToRangeSet(intervals);
+    int max_multiplicity = intervals.size();
+    std::sort(interval_bounds.begin(),interval_bounds.end());
+
+    std::vector<std::vector<unsigned long>> multiplicities;
+    multiplicities = instance_.toIntervals(interval_bounds);
+
+    std::vector<std::vector<unsigned long>> expected_multiplicities({{41, 45, 50, 51 },{ 12, 28, 31, 40 },{ 8, 11, 29, 30 },{},{ 0, 3, 6, 7 },{ 4, 4 },{ 5, 5 },{},{},{}});
+
+    EXPECT_EQ(multiplicities, expected_multiplicities);
+}
+
+TEST_F(ZealandTest, TestToIntervalBounds)
+{
+    // A somewhat arbitrary set of blocks 
+    // smallest block is level 2
+    Blockset blockset({0b1000,0b1000000,0b1000001,0b1000001001,0b1000001010,0b1000101101});
+    double volume = instance_.getVolume(blockset);
+
+    Rangeset ranges = instance_.toIntervalBounds(blockset);
+
+    double block_len = .125;
+    double block_vol = pow(.125,3);
+    double vol = 0;
+    for (int i = 0; i < ranges.size() - 1; i = i + 2)
+    {
+        int num = (ranges[i+1].first - ranges[i].first) + 1;
+        vol += num*block_vol;
+    }
+
+    EXPECT_EQ(volume,vol);
+}
+
+// Create an arbitrary blockset, convert to interval bounds,
+// then collapse the interval bounds and verify the resulting
+// blockset has the same volume as the original
+TEST_F(ZealandTest, TestCollapse_2)
+{
+    Blockset blockset({0b1000,0b1000000,0b1000001,0b1000001001,0b1000001010,0b1000101101});
+    double volume = instance_.getVolume(blockset);
+
+    Rangeset ranges = instance_.toIntervalBounds(blockset);
+
+    Blockset collapsed = instance_.collapse(ranges);
+    double collapsed_volume = instance_.getVolume(collapsed); 
+
+    EXPECT_EQ(volume,collapsed_volume);
+}
 
 int main(int argc, char** argv)
 {
