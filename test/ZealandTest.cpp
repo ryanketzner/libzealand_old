@@ -422,6 +422,20 @@ TEST_F(ZealandTest, TestCollapse)
     //     EXPECT_EQ(instance_.getLevel(full_9[i]),level);
 }
 
+TEST_F(ZealandTest, TestToIntervals)
+{
+    int max_multiplicity = 5;
+
+    //Rangeset interval_bounds({{0,0},{0,0},{3,1},{4,0},{5,0},{5,1},{6,0},{6,1},{7,1},{15,0},{15,1},{15,1}});
+    Rangeset interval_bounds({{0,0},{3,1},{4,0},{5,0},{5,1},{6,0},{6,1},{7,1},{9,0},{9,1},{15,0},{15,1}});
+    
+
+    instance_.toIntervals(interval_bounds,max_multiplicity);
+
+    EXPECT_TRUE(1);
+}
+
+
 
 int main(int argc, char** argv)
 {

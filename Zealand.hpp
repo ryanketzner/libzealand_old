@@ -16,6 +16,8 @@ using Sphere3 = gte::Sphere3<double>;
 using Blockset = std::vector<unsigned long>;
 using Block8 = std::array<unsigned long,8>;
 using Coverage = std::array<Blockset,2>;
+using Range = std::pair<unsigned long, bool>;
+using Rangeset = std::vector<Range>;
 
 class Zealand
 {
@@ -87,8 +89,14 @@ class Zealand
         unsigned long getLargestChild(unsigned long block, int depth);
         unsigned long getSmallestChild(unsigned long block, int depth);
 
-    protected:
+        std::vector<std::vector<unsigned long>> toIntervals(const Rangeset& interval_bounds, int max_multiplicity);
+        Rangeset toIntervalBounds(const Blockset& blockset);
 
+        Range getRangeStart(unsigned long block, int depth);
+        Range getRangeStop(unsigned long block, int depth);
+
+
+        // Public data members
         double scale;
         const static int MAX_LEVEL = 20;
 

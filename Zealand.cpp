@@ -39,6 +39,187 @@ scale(scale)
     }
 }
 
+Rangeset Zealand::toIntervalBounds(const Blockset& blockset)
+{
+    if (blockset.size() == 0)
+        std::cout << "Exception" << std::endl;
+
+    int max_level = getLevel(blockset.back());
+    Rangeset intervals;
+
+    for (int i = 0; i < blockset.size(); i++)
+    {
+        int block_level = getLevel(blockset[i]);
+        int depth = max_level - block_level;
+        intervals.emplace_back(getRangeStart(blockset[i],depth));
+        intervals.emplace_back(getRangeStop(blockset[i],depth));
+    }
+
+    // Q: RVO performed here?
+    return intervals;
+}
+
+std::vector<std::vector<unsigned long>> Zealand::toIntervals(const Rangeset& interval_bounds, int max_multiplicity)
+{
+    std::vector<std::vector<unsigned long>> multiplicities(max_multiplicity);
+
+    bool run = false;
+    int run_mult = 0;
+    unsigned long run_start;
+    int multiplicity = 0;
+    int i;
+    for (i = 0; i < interval_bounds.size() - 1; i++)
+    {
+        unsigned long block = interval_bounds[i].first;
+        if (interval_bounds[i].second == 0) // open
+        {
+            multiplicity++;
+            std::cout << "Open at: " << block << std::endl;
+
+            // open -> closed OR open -> diff
+            if (interval_bounds[i+1].second == 1 || interval_bounds[i+1].first != block) // has volume!
+            {
+                if (run)
+                {
+                    if (multiplicity == run_mult)
+                    {
+                        // keep running !
+                    }
+                    else
+                    {
+                        // the run stops here
+                        unsigned long run_stop = block - 1;
+                        // the current block STARTS a run of different multiplicity then the current run
+
+                        if (run_mult > 0)
+                        {
+                            multiplicities[run_mult - 1].emplace_back(run_start);
+                            multiplicities[run_mult - 1].emplace_back(run_stop);
+                        }
+                        //std::cout << "Ended run at: " << run_stop << " with multiplicity " << run_mult << std::endl;
+                        std::cout << "Made run (" << run_start << ", " << run_stop << ") with multiplicity " << run_mult << std::endl;
+
+                        // start the next run !
+                        run = true;
+                        run_mult = multiplicity;
+                        run_start = block;
+                        //std::cout << "Starting run at: " << run_start << " with multiplicity " << run_mult << std::endl;
+                    }
+                }
+                else // start running !
+                {
+                    run = true;
+                    run_mult = multiplicity;
+                    run_start = block;
+
+                    //std::cout << "Starting run at: " << run_start << " with multiplicity " << run_mult << std::endl;
+                }
+            }
+            else // doesn't have volume!
+            {
+                // I think if there is no volume on an open block
+                // we can't be running yet
+                // next loop iter
+            }
+        }
+        else // close
+        {
+            multiplicity--;
+            //std::cout << "Closed at: " << block << std::endl;
+
+            // closed -> diff closed OR closed -> nonconsec  open
+            if ( (interval_bounds[i+1].second == 1 && interval_bounds[i+1].first != block) || // has volume!
+                 (interval_bounds[i+1].first != (block+1) && interval_bounds[i+1].second == 0) )
+            {
+                if (!run)
+                {
+                    std::cout << "Volume! I thought this would never happen..." << std::endl;
+                }
+                else // we are in a run
+                {
+                    if (multiplicity == run_mult)
+                    {
+                    }// keep running!
+                    else
+                    {
+                        // the run stops here
+                        unsigned long run_stop = block;
+                        // the current block ENDS a run
+                        
+                        // Just ignore runs = 0
+                        if (run_mult > 0)
+                        {
+                            //std::cout << "Ending run at: " << run_stop << " with multiplicity " << run_mult << std::endl;
+                            multiplicities[run_mult - 1].push_back(run_start);
+                            multiplicities[run_mult - 1].push_back(run_stop);
+                        }
+                        std::cout << "Made run (" << run_start << ", " << run_stop << ") with multiplicity " << run_mult << std::endl;
+
+                        // start the next run !
+                        // when starting run from a closed block
+                        // we want to start from the next consecutive block (even if it isn't in the bounds list)
+                        run = true;
+                        run_mult = multiplicity;
+                        run_start = block + 1;
+
+                        //std::cout << "Starting run at: " << run_start << " with multiplicity " << run_mult << std::endl;
+                    }
+                }
+            }
+            else // doesn't have volume!
+            {
+                if (run)
+                {
+                    // std::cout << "running" << std::endl;
+                }
+                else
+                {
+                    std::cout << "No volume! I thought this would never happen..." << std::endl;
+                }
+            }
+        }
+    }
+    // obviously, we've reached the last boundary so there can't be any runs after this!
+    unsigned long run_stop = interval_bounds[i].first;
+    multiplicities[run_mult - 1].emplace_back(run_start);
+    multiplicities[run_mult - 1].emplace_back(run_stop);
+    std::cout << "Made run (" << run_start << ", " << run_stop << ") with multiplicity " << run_mult << std::endl;
+
+    return multiplicities;
+}
+
+Range Zealand::getRangeStart(unsigned long block, int depth)
+{
+    unsigned long smallest_child = getSmallestChild(block,depth);
+
+    return Range({smallest_child,0});
+}
+
+Range Zealand::getRangeStop(unsigned long block, int depth)
+{
+    unsigned long largest_child = getLargestChild(block,depth);
+    return Range({largest_child,1});
+}
+
+unsigned long Zealand::getSmallestChild(unsigned long block, int depth)
+{
+    return block << 3*depth;
+}
+
+unsigned long Zealand::getLargestChild(unsigned long block, int depth)
+{
+    return (block << 3*depth) | set3NBits(depth);
+}
+
+void Zealand::appendChildren(unsigned long block, Blockset& blockset, int depth)
+{
+    unsigned long smallest_child = getSmallestChild(block,depth);
+    unsigned long largest_child = getLargestChild(block,depth);
+
+    for (unsigned long i = smallest_child; i <= largest_child; i++)
+        blockset.push_back(i);
+}
+
 Blockset Zealand::collapse(const Blockset& blockset, int level)
 {
     if (blockset.size() == 0)
@@ -54,17 +235,7 @@ Blockset Zealand::collapse(const Blockset& blockset, int level)
             int block_level = getLevel(blockset[i]);
             int depth = level - block_level;
 
-            int old_size = collapsed.size();
             appendChildren(blockset[i], collapsed, depth);
-            int new_size = collapsed.size();
-            int added = new_size - old_size;
-
-            if (added != pow(8,depth))
-            {
-                // std::cout << "Error!" << std::endl;
-                // std::cout << added << std:: endl;
-                // std::cout << pow(8,depth) << std::endl;
-            }
         }
     }
     else
@@ -135,25 +306,6 @@ unsigned long Zealand::set3NBits(int n)
         mask = (mask << 3) | 7;
     }
     return mask;
-}
-
-unsigned long Zealand::getSmallestChild(unsigned long block, int depth)
-{
-    return block << 3*depth;
-}
-
-unsigned long Zealand::getLargestChild(unsigned long block, int depth)
-{
-    return (block << 3*depth) | set3NBits(depth);
-}
-
-void Zealand::appendChildren(unsigned long block, Blockset& blockset, int depth)
-{
-    unsigned long smallest_child = getSmallestChild(block,depth);
-    unsigned long largest_child = getLargestChild(block,depth);
-
-    for (unsigned long i = smallest_child; i <= largest_child; i++)
-        blockset.push_back(i);
 }
 
 // void Zealand::appendChildren(unsigned long block, Blockset& blockset, int depth)
