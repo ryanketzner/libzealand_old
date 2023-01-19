@@ -1,19 +1,34 @@
 #include "Zealand.hpp"
 #include "gtest/gtest.h"
 
-using Vector3 = gte::Vector3<double>;
-using AlignedBox3 = gte::AlignedBox3<double>;
-using Sphere3 = gte::Sphere3<double>;
-using Blockset = std::vector<unsigned long>;
-using Block8 = std::array<unsigned long,8>;
-using Coverage = std::array<Blockset,2>;
+using namespace libZealand;
+
+// Helper functions
+std::string longestPrefix(unsigned long block_1, unsigned long block_2)
+{
+    std::string str1 = std::bitset<64>(block_1).to_string();
+    std::string str2 = std::bitset<64>(block_2).to_string();
+
+    int i = 0;
+	while(i < str2.length() && str1[i] == str2[i])
+		i++;
+
+    std::string prefix = str1.substr(0,i);
+    while (prefix.size() % 3 != 1)
+        prefix.pop_back();
+
+    while (prefix.size() < 64)
+        prefix.insert(0,"0");
+
+    return prefix;
+}
 
 // Define a test fixture class
 class ZealandTest : public ::testing::Test
 {
     protected:
         ZealandTest() : 
-        instance_(1.0)  // Replace with appropriate arguments for the constructor
+        instance_(1.0,1.0,1.0)  // Replace with appropriate arguments for the constructor
         {
         }
 
@@ -31,12 +46,14 @@ TEST_F(ZealandTest, TestGetLevel)
         // Increase level of block by 1
         // for i = 0, block is level 0
         block = block << 3;
-        level = instance_.getLevel(block);
+        level = getLevel(block);
         // Expected level = i
         EXPECT_EQ(level,i);
     }
 }
 
+// I think this function is actually still broken
+// needs more tests
 TEST_F(ZealandTest, TestGetCenter)
 {
     // Test bottom-left blocks at each level
@@ -64,7 +81,7 @@ TEST_F(ZealandTest, TestGetCenter)
         Vector3 center = instance_.getCenter(block);
         EXPECT_EQ(center, expected_center);
 
-        Block8 children = instance_.getChildren(block);
+        Block8 children = getChildren(block);
         block = children[7];
     }
 }
@@ -108,7 +125,7 @@ TEST_F(ZealandTest, TestGetChildren)
                               0b00000000000000000000000000000000000000000000000000000000001000101,
                               0b00000000000000000000000000000000000000000000000000000000001000110,
                               0b00000000000000000000000000000000000000000000000000000000001000111}};
-    Block8 children = instance_.getChildren(block);
+    Block8 children = getChildren(block);
     EXPECT_EQ(children, expected_children);
 }
 
@@ -150,7 +167,7 @@ TEST_F(ZealandTest, TestRefine)
     // Define coverage object
     Coverage coverage({partial,full});
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 7; i++)
     {
         instance_.refine(coverage, sphere);
         // std::cout << "Covered size: " << coverage[1].size() << std::endl;
@@ -181,7 +198,7 @@ TEST_F(ZealandTest, TestGetVolume)
     // Define coverage object
     Coverage coverage({partial,full});
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 7; i++)
     {
         instance_.refine(coverage, sphere);
         double full_vol = instance_.getVolume(coverage[1]);
@@ -232,7 +249,7 @@ TEST_F(ZealandTest, TestGetVolume_2)
     Coverage coverage({partial,full});
 
     // Should take down to level 8
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 7; i++)
     {
         instance_.refine(coverage, box);
         double full_vol = instance_.getVolume(coverage[1]);
@@ -261,10 +278,10 @@ TEST_F(ZealandTest, TestSet3NBits)
     unsigned long expected_3 = 0b111111111;
     unsigned long expected_7 = 0b111111111111111111111;
 
-    EXPECT_EQ(expected_1, instance_.set3NBits(1));
-    EXPECT_EQ(expected_2, instance_.set3NBits(2));
-    EXPECT_EQ(expected_3, instance_.set3NBits(3));
-    EXPECT_EQ(expected_7, instance_.set3NBits(7));
+    EXPECT_EQ(expected_1, set3NBits(1));
+    EXPECT_EQ(expected_2, set3NBits(2));
+    EXPECT_EQ(expected_3, set3NBits(3));
+    EXPECT_EQ(expected_7, set3NBits(7));
 }
 
 TEST_F(ZealandTest, TestGetLargestChild)
@@ -276,9 +293,9 @@ TEST_F(ZealandTest, TestGetLargestChild)
     unsigned long expected_2 = 0b1011111111;
     unsigned long expected_3 = 0b1011111111111;
 
-    EXPECT_EQ(expected_1, instance_.getLargestChild(block,1));
-    EXPECT_EQ(expected_2, instance_.getLargestChild(block,2));
-    EXPECT_EQ(expected_3, instance_.getLargestChild(block,3));
+    EXPECT_EQ(expected_1, getLargestChild(block,1));
+    EXPECT_EQ(expected_2, getLargestChild(block,2));
+    EXPECT_EQ(expected_3, getLargestChild(block,3));
 }
 
 TEST_F(ZealandTest, TestGetSmallestChild)
@@ -289,9 +306,9 @@ TEST_F(ZealandTest, TestGetSmallestChild)
     unsigned long expected_2 = 0b1011000000;
     unsigned long expected_3 = 0b1011000000000;
 
-    EXPECT_EQ(expected_1, instance_.getSmallestChild(block,1));
-    EXPECT_EQ(expected_2, instance_.getSmallestChild(block,2));
-    EXPECT_EQ(expected_3, instance_.getSmallestChild(block,3));
+    EXPECT_EQ(expected_1, getSmallestChild(block,1));
+    EXPECT_EQ(expected_2, getSmallestChild(block,2));
+    EXPECT_EQ(expected_3, getSmallestChild(block,3));
 }
 
 TEST_F(ZealandTest, TestAppendChildren)
@@ -302,7 +319,7 @@ TEST_F(ZealandTest, TestAppendChildren)
     // Generate 1 level of children
     int levels = 1;
     Blockset children;
-    instance_.appendChildren(block, children, levels);
+    appendChildren(block, children, levels);
 
     // There should be 8^1 = 8 children
     EXPECT_EQ(children.size(), pow(8, levels));
@@ -310,7 +327,7 @@ TEST_F(ZealandTest, TestAppendChildren)
     // Generate 4 levels of children
     levels = 4;
     Blockset children_4;
-    instance_.appendChildren(block, children_4, levels);
+    appendChildren(block, children_4, levels);
 
     // There should be 8^4 = 4096 children
     int expected_children = pow(8, levels);
@@ -321,7 +338,7 @@ TEST_F(ZealandTest, TestAppendChildren)
     block = block << 3*3;
     levels = 1;
     children.clear();
-    instance_.appendChildren(block, children, levels);
+    appendChildren(block, children, levels);
 
     // There should be 8^1 = 8 children
     expected_children = pow(8, levels);
@@ -336,7 +353,7 @@ TEST_F(ZealandTest, TestAppendChildren)
 //     // Generate 1 level of children
 //     int levels = 1;
 //     Blockset children;
-//     instance_.appendChildren(block, children, levels);
+//     appendChildren(block, children, levels);
 
 //     // There should be 8^1 = 8 children
 //     EXPECT_EQ(children.size(), pow(8, levels));
@@ -344,7 +361,7 @@ TEST_F(ZealandTest, TestAppendChildren)
 //     // Generate 4 levels of children
 //     levels = 4;
 //     Blockset children_4;
-//     instance_.appendChildren(block, children_4, levels);
+//     appendChildren(block, children_4, levels);
 
 //     // There should be 8^1 + 8^2 + 8^3 + 8^4 = 8 + 64 + 512 + 4096 = 4680 children
 //     int expected_children = 0;
@@ -376,7 +393,7 @@ TEST_F(ZealandTest, TestCollapse)
     // Define coverage object
     Coverage coverage({partial,full});
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 4; i++)
     {
         instance_.refine(coverage, sphere);
 
@@ -391,9 +408,9 @@ TEST_F(ZealandTest, TestCollapse)
         // std::cout << "Covered + Partial volume: " << instance_.getVolume(coverage[0]) + instance_.getVolume(coverage[1]) << std::endl;
     }
 
-    int level = 8;
-    Blockset partial_9 = instance_.collapse(coverage[0],level);
-    Blockset full_9 = instance_.collapse(coverage[1],level);
+    int level = 7;
+    Blockset partial_9 = collapse(coverage[0],level);
+    Blockset full_9 = collapse(coverage[1],level);
 
     // Volume after collapse should stay the same
     EXPECT_EQ(instance_.getVolume(coverage[0]), instance_.getVolume(partial_9));
@@ -416,10 +433,10 @@ TEST_F(ZealandTest, TestCollapse)
 
     // // Every cell should be level 9
     // for (int i = 0; i < partial_9.size(); i++)
-    //     EXPECT_EQ(instance_.getLevel(partial_9[i]),level);
+    //     EXPECT_EQ(getLevel(partial_9[i]),level);
 
     // for (int i = 0; i < full_9.size(); i++)
-    //     EXPECT_EQ(instance_.getLevel(full_9[i]),level);
+    //     EXPECT_EQ(getLevel(full_9[i]),level);
 }
 
 // This is not a real test
@@ -431,7 +448,7 @@ TEST_F(ZealandTest, TestToIntervals)
     Rangeset interval_bounds({{0,0},{3,1},{4,0},{5,0},{5,1},{6,0},{6,1},{7,1},{9,0},{9,1},{15,0},{15,1}});
 
 
-    instance_.toIntervals(interval_bounds);
+    toIntervals(interval_bounds);
 
     EXPECT_TRUE(1);
 }
@@ -439,12 +456,12 @@ TEST_F(ZealandTest, TestToIntervals)
 TEST_F(ZealandTest, TestToIntervals_2)
 {
     Intervalset intervals({{0,45},{0,7},{7,30},{29,40},{0,5},{0,6},{0,11},{50,51}});
-    Rangeset interval_bounds = instance_.intervalSetToRangeSet(intervals);
+    Rangeset interval_bounds = intervalSetToRangeSet(intervals);
     int max_multiplicity = intervals.size();
     std::sort(interval_bounds.begin(),interval_bounds.end());
 
     std::vector<std::vector<unsigned long>> multiplicities;
-    multiplicities = instance_.toIntervals(interval_bounds);
+    multiplicities = toIntervals(interval_bounds);
 
     std::vector<std::vector<unsigned long>> expected_multiplicities({{41,45,50,51},{12,28,31,40},{8,11,29,30},{6,7},{0,5},{},{},{}});
 
@@ -454,12 +471,12 @@ TEST_F(ZealandTest, TestToIntervals_2)
 TEST_F(ZealandTest, TestToIntervals_3)
 {
     Intervalset intervals({{0,45},{0,7},{7,30},{29,40},{0,5},{0,6},{0,11},{50,51},{4,7},{5,5}});
-    Rangeset interval_bounds = instance_.intervalSetToRangeSet(intervals);
+    Rangeset interval_bounds = intervalSetToRangeSet(intervals);
     int max_multiplicity = intervals.size();
     std::sort(interval_bounds.begin(),interval_bounds.end());
 
     std::vector<std::vector<unsigned long>> multiplicities;
-    multiplicities = instance_.toIntervals(interval_bounds);
+    multiplicities = toIntervals(interval_bounds);
 
     std::vector<std::vector<unsigned long>> expected_multiplicities({{41, 45, 50, 51 },{ 12, 28, 31, 40 },{ 8, 11, 29, 30 },{},{ 0, 3, 6, 7 },{ 4, 4 },{ 5, 5 },{},{},{}});
 
@@ -473,7 +490,7 @@ TEST_F(ZealandTest, TestToIntervalBounds)
     Blockset blockset({0b1000,0b1000000,0b1000001,0b1000001001,0b1000001010,0b1000101101});
     double volume = instance_.getVolume(blockset);
 
-    Rangeset ranges = instance_.toIntervalBounds(blockset);
+    Rangeset ranges = toIntervalBounds(blockset);
 
     double block_len = .125;
     double block_vol = pow(.125,3);
@@ -495,13 +512,76 @@ TEST_F(ZealandTest, TestCollapse_2)
     Blockset blockset({0b1000,0b1000000,0b1000001,0b1000001001,0b1000001010,0b1000101101});
     double volume = instance_.getVolume(blockset);
 
-    Rangeset ranges = instance_.toIntervalBounds(blockset);
+    Rangeset ranges = toIntervalBounds(blockset);
 
-    Blockset collapsed = instance_.collapse(ranges);
+    Blockset collapsed = collapse(ranges);
     double collapsed_volume = instance_.getVolume(collapsed); 
 
     EXPECT_EQ(volume,collapsed_volume);
 }
+
+// Not a complete test yet
+TEST_F(ZealandTest, TestRefine_3)
+{
+    // Define the initial partial blockset as the eight level-0 quadrants
+    unsigned long terminator = 1 << 3;
+    Blockset partial({0,1,2,3,4,5,6,7});
+    for (int i = 0; i < partial.size(); i++)
+    {
+        partial[i] = partial[i] | terminator;
+    }
+
+    Blockset full;
+
+    Coverage coverage({partial,full});
+
+    // Define shapes
+    Vector3 center1({0.0,0.0,0.0});
+    Vector3 center2({.1,.1,.1});
+
+    double radius1 = .05;
+    double radius2 = .25;
+    double radius3 = .005;
+
+    VolumeFOV* ltas = new GTEFOV<Sphere3>(Sphere3(center1,radius1));
+    VolumeFOV* utas = new GTEFOV<Sphere3>(Sphere3(center1,radius2));
+    VolumeFOV* sat = new GTEFOV<Sphere3>(Sphere3(center2,radius3));
+
+    std::vector<VolumeFOV*> shapes({utas,sat});
+    std::vector<VolumeFOV*> not_shapes({ltas});
+
+    instance_.refine(coverage,shapes,not_shapes);
+}
+
+TEST_F(ZealandTest, TestLocateRegion)
+{
+    unsigned int x1[5] = {20,25,23545,55,0};
+    unsigned int y1[5] = {23,68,323,67,0};
+    unsigned int z1[5] = {23,68,323,67,0};
+
+    unsigned int x2[5] = {98798,245,65,76,UINT32_MAX};
+    unsigned int y2[5] = {767,2,44,6,UINT32_MAX};
+    unsigned int z2[5] = {879,22,11,478,UINT32_MAX};
+
+    unsigned long blocks1[5];
+    unsigned long blocks2[5];
+
+    for (int i = 0; i < 5; i++)
+    {
+        blocks1[i] = encode(x1[i],y1[i],z1[i]);
+        blocks2[i] = encode(x2[i],y2[i],z2[i]);
+
+        std::string expected_prefix = longestPrefix(blocks1[i],blocks2[i]);
+        unsigned long prefix = locateRegion(blocks1[i],blocks2[i]);
+        std::string prefix_str = std::bitset<64>(prefix).to_string();
+
+        //std::cout << std::bitset<64>(blocks1[i]) << std::endl;
+        //std::cout << std::bitset<64>(blocks2[i]) << std::endl;
+        //std::cout << prefix_str << std::endl;
+        EXPECT_EQ(expected_prefix, prefix_str);
+    }
+}
+
 
 int main(int argc, char** argv)
 {
