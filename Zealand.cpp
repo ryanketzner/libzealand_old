@@ -1,7 +1,6 @@
 #include "Zealand.hpp"
 
-namespace libZealand
-{
+
 Zealand::Zealand(double scale_x, double scale_y, double scale_z) : 
 scale_x(scale_x),
 scale_y(scale_y),
@@ -91,5 +90,4 @@ double Zealand::getVolume(const std::vector<unsigned long>& intervals, int multi
         volume += num_blocks*block_volume;
     }
     return volume;
-}
 }
