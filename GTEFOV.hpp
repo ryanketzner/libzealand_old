@@ -11,12 +11,12 @@ class GTEFOV : public VolumeFOV
         {
         }
 
-        virtual bool intersects (const AlignedBox3& box)
+        bool intersects (const AlignedBox3& box) override
         {
             return query(box, shape).intersect;
         }
 
-        virtual bool contains (const AlignedBox3& box)
+        bool contains (const AlignedBox3& box) override
         {
             std::array<Vector3,8> vertices;
             box.GetVertices(vertices);
@@ -34,8 +34,8 @@ class GTEFOV : public VolumeFOV
 
     protected:
 
-    GTEPrimative shape;
-    gte::TIQuery<double,AlignedBox3,GTEPrimative> query;
+        GTEPrimative shape;
+        gte::TIQuery<double,AlignedBox3,GTEPrimative> query;
 };
 
 #endif
