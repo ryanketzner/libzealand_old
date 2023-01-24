@@ -1,0 +1,6 @@
+[submodule "lib/GeometricTools"]
+	path = lib/GeometricTools
+	url = https://github.com/davideberly/GeometricTools.git
+[submodule "lib/libmorton"]
+	path = lib/libmorton
+	url = https://github.com/Forceflow/libmorton.git
