@@ -5,7 +5,7 @@ add_executable(ZealandTest_Slow ZealandTest_Slow.cpp)
 include_directories(${CMAKE_SOURCE_DIR})
 
 find_package(GTest REQUIRED)
-set(LIBS GTest::GTest GTest::Main Zealand)
+set(LIBS GTest::GTest GTest::Main)
 
 target_link_libraries(ZealandTest ${LIBS})
 target_link_libraries(ZealandTest_Slow ${LIBS})
