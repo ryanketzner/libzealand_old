@@ -8,15 +8,21 @@
 #include "Mathematics/Vector3.h"
 #include "Mathematics/AlignedBox.h"
 #include "Mathematics/Hypersphere.h"
+#include "Mathematics/Cone.h"
 #include "Mathematics/IntrAlignedBox3Sphere3.h"
 #include "Mathematics/ContSphere3.h"
 #include "Mathematics/ContAlignedBox.h"
 #include "Mathematics/IntrAlignedBox3AlignedBox3.h"
+#include "Mathematics/IntrAlignedBox3Cone3.h"
+#include "Mathematics/ContCone.h"
+#include "Mathematics/Halfspace.h"
+#include "Mathematics/Ray.h"
 
 // Convenience templates
 using Vector3 = gte::Vector3<double>;
 using AlignedBox3 = gte::AlignedBox3<double>;
 using Sphere3 = gte::Sphere3<double>;
+using Cone3 = gte::Cone3<double>;
 using Blockset = std::vector<unsigned long>;
 using Block8 = std::array<unsigned long,8>;
 using Coverage = std::array<Blockset,2>;

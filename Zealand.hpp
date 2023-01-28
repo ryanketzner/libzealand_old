@@ -11,6 +11,11 @@ class Zealand
 {
     public:
 
+        Zealand(double scale) : 
+        Zealand (scale, scale, scale)
+        {
+        }
+
         Zealand(double scale_x, double scale_y, double scale_z) :
         scale_x(scale_x),
         scale_y(scale_y),
@@ -28,10 +33,10 @@ class Zealand
             }
         }
 
-        void refine(Coverage& coverage, std::vector<VolumeFOV*> shapes, std::vector<VolumeFOV*> not_shapes, int level)
-        {
+        // void refine(Coverage& coverage, std::vector<VolumeFOV*> shapes, std::vector<VolumeFOV*> not_shapes, int level)
+        // {
 
-        }
+        // }
 
         void refine(Coverage& coverage, std::vector<VolumeFOV*> shapes, std::vector<VolumeFOV*> not_shapes)
         {
