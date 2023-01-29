@@ -5,7 +5,9 @@
 #include <vector>
 #include <iostream>
 #include "morton.h"
+#include "Mathematics/Vector.h"
 #include "Mathematics/Vector3.h"
+#include "Mathematics/Matrix3x3.h"
 #include "Mathematics/AlignedBox.h"
 #include "Mathematics/Hypersphere.h"
 #include "Mathematics/Cone.h"
@@ -19,7 +21,10 @@
 #include "Mathematics/Ray.h"
 
 // Convenience templates
+using Matrix3x3 = gte::Matrix3x3<double>;
 using Vector3 = gte::Vector3<double>;
+using Halfspace3 = gte::Halfspace3<double>;
+using Ray3 = gte::Ray3<double>;
 using AlignedBox3 = gte::AlignedBox3<double>;
 using Sphere3 = gte::Sphere3<double>;
 using Cone3 = gte::Cone3<double>;

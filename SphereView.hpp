@@ -1,3 +1,6 @@
+#ifndef SphereView_hpp
+#define SphereView_hpp
+
 #include "util.hpp"
 
 class SphereView : public RigidView
@@ -7,7 +10,6 @@ public:
     SphereView(Vector3 center, double radius) :
     sphere(center, radius)
     {
-        sphere(center, radius);
     }
 
     bool intersects(const AlignedBox3& box) override
@@ -43,5 +45,7 @@ public:
 protected:
 
     Sphere3 sphere;
-    TIQuery<double,AlignedBox3,Sphere3> query;
+    gte::TIQuery<double,AlignedBox3,Sphere3> query;
 };
+
+#endif

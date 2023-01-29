@@ -1,4 +1,5 @@
 #include "util.hpp"
+#include "Mathematics/Vector3.h"
 
 // Abstract base class defining the intersection interface
 class SphericalPolyView : public RigidView
@@ -7,13 +8,13 @@ class SphericalPolyView : public RigidView
 
         // Pyramid
         // n1, n2, n3 must be normalized
-        SphericalPolyView(Vector3 center, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4) :
+        SphericalPolyView(Vector3 center, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
         {
             // Compute normal vectors
-            Vector3 n1 = cross(v1,v2);
-            Vector3 n2 = cross(v2,v3);
-            Vector3 n3 = cross(v3,v4);
-            Vector3 n4 = cross(v4,v1);
+            Vector3 n1 = gte::Cross(v1,v2);
+            Vector3 n2 = gte::Cross(v2,v3);
+            Vector3 n3 = gte::Cross(v3,v4);
+            Vector3 n4 = gte::Cross(v4,v1);
 
             vertices.push_back(v1);
             vertices.push_back(v2);
@@ -26,28 +27,28 @@ class SphericalPolyView : public RigidView
             normals.push_back(n4);
 
             // Compute plane constants
-            double c1 = n1*center;
-            double c2 = n2*center;
-            double c3 = n3*center;
-            double c4 = n4*center;
+            double c1 = gte::Dot(n1,center);
+            double c2 = gte::Dot(n2,center);
+            double c3 = gte::Dot(n3,center);
+            double c4 = gte::Dot(n4,center);
 
-            planes.push_back(n1,c1);
-            planes.push_back(n2,c1);
-            planes.push_back(n3,c1);
-            planes.push_back(n4,c1);
+            planes.push_back({n1,c1});
+            planes.push_back({n2,c1});
+            planes.push_back({n3,c1});
+            planes.push_back({n4,c1});
 
-            rays.push_back(center,v1);
-            rays.push_back(center,v2);
-            rays.push_back(center,v3);
-            rays.push_back(center,v4);
+            rays.push_back({center,v1});
+            rays.push_back({center,v2});
+            rays.push_back({center,v3});
+            rays.push_back({center,v4});
         }
 
         bool intersects (const AlignedBox3& box) override
         {
-            TIQuery<double,AlignedBox3,Ray3> query;
+            gte::TIQuery<double,Ray3,AlignedBox3> query;
             for (int i = 0; i < rays.size(); i++)
             {
-                if (query(box, rays[i]).intersect)
+                if (query(rays[i], box).intersect)
                 {
                     // The box is partially covered.
                     // It can't be fully covered since a corner
@@ -67,7 +68,7 @@ class SphericalPolyView : public RigidView
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    if (planes[i].normal*vertices[i] >= planes[i].constant)
+                    if (gte::Dot(planes[i].normal,vertices[i]) >= planes[i].constant)
                         return true;
                 }
             }
@@ -88,7 +89,7 @@ class SphericalPolyView : public RigidView
                 {
                     for (int j = 0; j < 8; j++)
                     {
-                        if (!planes[i].normal*vertices[i] >= planes[i].constant)
+                        if (!gte::Dot(planes[i].normal,vertices[i]) >= planes[i].constant)
                             return false;
                     }
                 }
@@ -102,7 +103,7 @@ class SphericalPolyView : public RigidView
             center = Vector3 ({x,y,z});
             for (int i = 0; i < planes.size(); i++)
             {
-                double c = planes[i].normal*center;
+                double c = gte::Dot(planes[i].normal,center);
 
                 planes[i].constant = c;
                 rays[i].origin = center;
@@ -121,7 +122,7 @@ class SphericalPolyView : public RigidView
             {
                 // Update halfspace normals and c
                 Vector3 inertial_normal = R_NS*normals[i];
-                double c = inertial_normal*center;
+                double c = gte::Dot(inertial_normal,center);
                 planes[i].constant = c;
                 planes[i].normal = inertial_normal;
 
@@ -144,7 +145,7 @@ class SphericalPolyView : public RigidView
             {
                 // Update halfspace normals and c
                 Vector3 inertial_normal = R_NS*normals[i];
-                double c = inertial_normal*center;
+                double c = gte::Dot(inertial_normal,center);
                 planes[i].constant = c;
                 planes[i].normal = inertial_normal;
 

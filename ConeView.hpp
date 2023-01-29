@@ -54,5 +54,5 @@ protected:
     Vector3 direction;
 
     Cone3 cone;
-    TIQuery<double,AlignedBox3,Cone3> query;
+    gte::TIQuery<double,AlignedBox3,Cone3> query;
 };
