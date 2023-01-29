@@ -1,5 +1,5 @@
-#ifndef SphericalPolyView.hpp
-#define SphericalPolyView.hpp
+#ifndef SphericalPolyView_hpp
+#define SphericalPolyView_hpp
 
 #include "util.hpp"
 #include "Mathematics/Vector3.h"
