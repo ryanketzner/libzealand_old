@@ -2,6 +2,7 @@
 #define SphereView_hpp
 
 #include "util.hpp"
+#include "RigidView.hpp"
 
 class SphereView : public RigidView
 {

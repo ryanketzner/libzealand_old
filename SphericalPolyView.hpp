@@ -1,5 +1,9 @@
+#ifndef SphericalPolyView.hpp
+#define SphericalPolyView.hpp
+
 #include "util.hpp"
 #include "Mathematics/Vector3.h"
+#include "RigidView.hpp"
 
 // Abstract base class defining the intersection interface
 class SphericalPolyView : public RigidView
@@ -171,3 +175,5 @@ class SphericalPolyView : public RigidView
 
         bool not_covered;
 };
+
+#endif

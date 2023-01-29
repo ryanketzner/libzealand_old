@@ -1,3 +1,6 @@
+#ifndef ConeView_hpp
+#define ConeView_hpp
+
 #include "util.hpp"
 
 class ConeView : public RigidView
@@ -56,3 +59,5 @@ protected:
     Cone3 cone;
     gte::TIQuery<double,AlignedBox3,Cone3> query;
 };
+
+#endif
