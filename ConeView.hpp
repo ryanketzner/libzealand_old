@@ -2,6 +2,7 @@
 #define ConeView_hpp
 
 #include "util.hpp"
+#include "RigidView.hpp"
 
 class ConeView : public RigidView
 {
