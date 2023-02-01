@@ -15,6 +15,14 @@ public:
     {
     }
 
+    // Defaults to direction aligned along Z axis
+
+    ConeView() :
+    cone(Ray3(Vector3({0.0,0.0,0.0}),Vector3({0.0,0.0,1.0})), M_PI/4),
+    direction(Vector3({0.0,0.0,1.0}))
+    {
+    }
+
     bool intersects(const AlignedBox3& box) override
     {
         return query(box,cone).intersect;
@@ -52,11 +60,13 @@ public:
         cone.ray.direction = R_NS*direction;
     }
 
+    // Cone stored as public member
+    Cone3 cone;
+
 protected:
     // In sensor frame
     Vector3 direction;
 
-    Cone3 cone;
     gte::TIQuery<double,AlignedBox3,Cone3> query;
 };
 
