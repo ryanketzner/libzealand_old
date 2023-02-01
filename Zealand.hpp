@@ -33,10 +33,17 @@ class Zealand
             }
         }
 
-        // void refine(Coverage& coverage, std::vector<VolumeFOV*> shapes, std::vector<VolumeFOV*> not_shapes, int level)
-        // {
+        void refine(std::vector<VolumeFOV*> shapes, std::vector<VolumeFOV*> not_shapes, int level)
+        {
+            // Initialize as partial coverage of super-block
+            Coverage initial;
+            initial[0].push_back(1ul);
 
-        // }
+            for (int i = 0; i <= level; i++)
+            {
+                refine(initial,shapes,not_shapes);
+            }
+        }
 
         void refine(Coverage& coverage, std::vector<VolumeFOV*> shapes, std::vector<VolumeFOV*> not_shapes)
         {
