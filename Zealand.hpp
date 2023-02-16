@@ -33,27 +33,88 @@ class Zealand
             }
         }
 
-        Coverage refine(std::vector<VolumeFOV*> shapes, std::vector<VolumeFOV*> not_shapes, int level)
+        Coverage refine(std::vector<VolumeFOV*>& shapes, std::vector<VolumeFOV*>& not_shapes, int level)
         {
             // Initialize as partial coverage of super-block
-            Coverage initial;
-            initial[0].push_back(1ul);
+            Coverage initial = getInitialCoverage();
 
             for (int i = 0; i <= level; i++)
             {
+                std::cout << i << std::endl;
                 refine(initial,shapes,not_shapes);
             }
 
             return initial;
         }
 
-        void refine(Coverage& coverage, std::vector<VolumeFOV*> shapes, std::vector<VolumeFOV*> not_shapes)
+        template<class Shape>
+        Coverage refine(const Shape& shape, int level)
+        {
+            // Initialize as partial coverage of super-block
+            Coverage initial = getInitialCoverage();
+
+            for (int i = 0; i <= level; i++)
+            {
+                refine(initial,shape);
+            }
+
+            return initial;
+        }
+
+        bool anyShapesIntersect(const AlignedBox3& box, const std::vector<VolumeFOV*>& shapes)
+        {
+            for (int k = 0; k < shapes.size(); k++)
+            {
+                // if any shapes intersect, return true
+                if (shapes[k]->intersects(box))
+                    return true;
+            }
+            return false;
+        }
+
+        bool allShapesIntersect(const AlignedBox3& box, const std::vector<VolumeFOV*>& shapes)
+        {
+            for (int k = 0; k < shapes.size(); k++)
+            {
+                // if any shape fails to intersect, return false
+                if (!shapes[k]->intersects(box))
+                    return false;
+            }
+            return true;
+        }
+
+
+        bool anyShapeCovers(const AlignedBox3& box, const std::vector<VolumeFOV*>& shapes)
+        {
+            for (int k = 0; k < shapes.size(); k++)
+            {
+                // if any shape contains, return true
+                if (shapes[k]->contains(box))
+                    return true;
+            }
+            return false;
+        }
+
+        bool allShapesCover(const AlignedBox3& box, const std::vector<VolumeFOV*>& shapes)
+        {
+            for (int k = 0; k < shapes.size(); k++)
+            {
+                // if any shape fails to contain, return false
+                if (!shapes[k]->contains(box))
+                    return false;
+            }
+            return true;
+        }
+
+        void refine(Coverage& coverage, const std::vector<VolumeFOV*>& shapes, const std::vector<VolumeFOV*>& not_shapes)
         {
             Blockset new_partial;
+            new_partial.reserve(coverage[0].size());
 
-            // Loop over each partially covered block
+            // For each partially covered block
             for (int i = 0; i < coverage[0].size(); i++)
             {
+                //std::cout << "Block #: " << i << std::endl;
                 // Generate 8 children of each partially covered block
                 Block8 children = getChildren(coverage[0][i]);
                 // Check coverage status of each child
@@ -61,51 +122,37 @@ class Zealand
                 {
                     AlignedBox3 box = getAlignedBox(children[j]);
 
-                    // Check whether all shapes intersect box
-                    for (int k = 0; k < shapes.size(); k++)
-                    {
-                        // If any shape doesn't intersect, break
-                        if (!shapes[k]->intersects(box))
-                            break;
-                    }
+                    if (!allShapesIntersect(box,shapes))
+                        continue;
+                    
 
-                    for (int k = 0; k < not_shapes.size(); k++)
-                    {
-                        // If any not_shape fully covers box, break
-                        if (not_shapes[k]->contains(box))
-                            break;   
-                    }
+                    if (anyShapeCovers(box,not_shapes))
+                        continue;
 
                     // At this point, all shapes intersect and
                     // no not_shape covers, so the box is at least
                     // partially contained
 
                     // Check whether all shapes cover box
-                    for (int k = 0; k < shapes.size(); i++)
+                    if (!allShapesCover(box,shapes))
                     {
                         // If any shape doesn't fully cover
                         // then the box is only partially contained
-                        if (!shapes[k]->contains(box))
-                        {
-                            new_partial.push_back(children[j]);
-                            break;
-                        }
-
+                        new_partial.push_back(children[j]);
+                        continue;
                     }
 
-                    for (int k = 0; k < not_shapes.size(); k++)
+                    if (anyShapesIntersect(box,not_shapes))
                     {
                         // If any not_shape intersects box
                         // then the box is only partially contained
-                        if (not_shapes[k]->intersects(box))
-                        {
-                            new_partial.push_back(children[j]);
-                            break;
-                        }
+                        new_partial.push_back(children[j]);
+                        continue;
                     }
 
                     // Contains
                     coverage[1].push_back(children[j]);
+                    //std::cout << "Finished." << std::endl;
                 }
             }
 
