@@ -33,7 +33,7 @@ class Zealand
             }
         }
 
-        Coverage refine(std::vector<VolumeFOV*>& shapes, std::vector<VolumeFOV*>& not_shapes, int level)
+        Coverage refine(const std::vector<VolumeFOV*>& shapes, const std::vector<VolumeFOV*>& not_shapes, int level)
         {
             // Initialize as partial coverage of super-block
             Coverage initial = getInitialCoverage();
