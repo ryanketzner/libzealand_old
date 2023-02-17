@@ -5,7 +5,7 @@
 #include "GTEFOV.hpp"
 #include "util.hpp"
 
-using namespace libZealand;
+using namespace libzealand;
 
 class Zealand
 {

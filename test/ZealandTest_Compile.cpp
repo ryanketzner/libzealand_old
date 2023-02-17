@@ -5,7 +5,7 @@
 #include "SphericalPolyView.hpp"
 #include "ConeView.hpp"
 
-using namespace libZealand;
+using namespace libzealand;
 
 // Define a test fixture class
 class ZealandTest : public ::testing::Test

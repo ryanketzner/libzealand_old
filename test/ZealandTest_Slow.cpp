@@ -4,7 +4,7 @@
 #include "SphereView.hpp"
 #include "ConeView.hpp"
 
-using namespace libZealand;
+using namespace libzealand;
 
 
 // Define a test fixture class

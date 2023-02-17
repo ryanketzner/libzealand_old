@@ -5,6 +5,8 @@
 #include "Mathematics/Vector3.h"
 #include "RigidView.hpp"
 
+namespace libzealand
+{
 // Abstract base class defining the intersection interface
 class SphericalPolyView : public RigidView
 {
@@ -175,5 +177,6 @@ class SphericalPolyView : public RigidView
 
         bool not_covered;
 };
+}
 
 #endif

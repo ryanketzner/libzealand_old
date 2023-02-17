@@ -3,6 +3,8 @@
 
 #include "util.hpp"
 
+namespace libzealand
+{
 // Abstract base class defining the intersection interface
 class VolumeFOV
 {
@@ -11,5 +13,6 @@ class VolumeFOV
         virtual bool intersects (const AlignedBox3& box) = 0;
         virtual bool contains (const AlignedBox3& box) = 0;
 };
+}
 
 #endif

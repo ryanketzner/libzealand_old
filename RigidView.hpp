@@ -4,6 +4,8 @@
 #include "util.hpp"
 #include "VolumeFOV.hpp"
 
+namespace libzealand
+{
 // Abstract base class defining the intersection interface
 class RigidView : public VolumeFOV
 {
@@ -13,5 +15,6 @@ class RigidView : public VolumeFOV
                                 double r2c1, double r2c2, double r2c3, 
                                 double r3c1, double r3c2, double r3c3) = 0;
 };
+}
 
 #endif

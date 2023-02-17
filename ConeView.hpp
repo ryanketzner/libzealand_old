@@ -4,6 +4,8 @@
 #include "util.hpp"
 #include "RigidView.hpp"
 
+namespace libzealand
+{
 class ConeView : public RigidView
 {
 public:
@@ -70,5 +72,6 @@ protected:
 
     gte::TIQuery<double,AlignedBox3,Cone3> query;
 };
+}
 
 #endif

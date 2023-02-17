@@ -1,7 +1,7 @@
 #include "Zealand.hpp"
 #include "gtest/gtest.h"
 
-using namespace libZealand;
+using namespace libzealand;
 
 // Helper functions
 std::string longestPrefix(unsigned long block_1, unsigned long block_2)

@@ -1,6 +1,8 @@
 #ifndef GTEFOV_hpp
 #define GTEFOV_hpp
 
+namespace libzealand
+{
 template <class GTEPrimative>
 class GTEFOV : public VolumeFOV
 {
@@ -37,5 +39,6 @@ class GTEFOV : public VolumeFOV
         GTEPrimative shape;
         gte::TIQuery<double,AlignedBox3,GTEPrimative> query;
 };
+}
 
 #endif

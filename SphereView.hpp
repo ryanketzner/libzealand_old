@@ -4,6 +4,8 @@
 #include "util.hpp"
 #include "RigidView.hpp"
 
+namespace libzealand
+{
 class SphereView : public RigidView
 {
 public:
@@ -48,5 +50,6 @@ protected:
     Sphere3 sphere;
     gte::TIQuery<double,AlignedBox3,Sphere3> query;
 };
+}
 
 #endif
