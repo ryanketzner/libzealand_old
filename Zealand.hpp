@@ -40,7 +40,7 @@ class Zealand
 
             for (int i = 0; i <= level; i++)
             {
-                std::cout << i << std::endl;
+                //std::cout << i << std::endl;
                 refine(initial,shapes,not_shapes);
             }
 
