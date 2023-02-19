@@ -36,7 +36,10 @@ class Zealand
         Coverage refine(const std::vector<VolumeFOV*>& shapes, const std::vector<VolumeFOV*>& not_shapes, int level)
         {
             // Initialize as partial coverage of super-block
-            Coverage initial = getInitialCoverage();
+            //Coverage initial = getInitialCoverage();
+            Blockset partial({1ul});
+            Blockset full;
+            Coverage initial({partial,full});
 
             for (int i = 0; i <= level; i++)
             {
@@ -51,7 +54,10 @@ class Zealand
         Coverage refine(const Shape& shape, int level)
         {
             // Initialize as partial coverage of super-block
-            Coverage initial = getInitialCoverage();
+            //Coverage initial = getInitialCoverage();
+            Blockset partial({1ul});
+            Blockset full;
+            Coverage initial({partial,full});
 
             for (int i = 0; i <= level; i++)
             {
