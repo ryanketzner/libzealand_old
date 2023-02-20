@@ -22,10 +22,10 @@ int main(void)
     std::vector<VolumeFOV*> not_shapes({sphere_small});
 
     int level = 4;
-    // for (int i = 0; i < 864; i++)
-    // {
+    for (int i = 0; i < 864; i++)
+    {
         zealand.refine(shapes,not_shapes,level);
-    // }
+    }
 
     return 0;
 }

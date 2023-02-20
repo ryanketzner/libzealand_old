@@ -221,6 +221,47 @@ TEST_F(ZealandTest, TestGetVolume)
     std::cout << coverage[0].size() << std::endl;
 }
 
+TEST_F(ZealandTest, TestGetArea)
+{
+    // Define the initial partial blockset as the eight level-0 quadrants
+    unsigned long terminator = 1 << 3;
+    Blockset partial({0,1,2,3,4,5,6,7});
+    for (int i = 0; i < partial.size(); i++)
+    {
+        partial[i] = partial[i] | terminator;
+    }
+
+    Blockset full;
+
+    // Define circle of radius cbrt(3/4)
+    // Volume of resulting sphere should be pi/16
+    Vector3 center({0.0,0.0,0.0});
+    double radius = cbrt(3.0/64.0);
+    double area = M_PI*pow(radius,2);
+    Sphere3 sphere(center,radius);
+
+    // Define coverage object
+    Coverage coverage({partial,full});
+
+    for (int i = 0; i < 7; i++)
+    {
+        instance_.refine(coverage, sphere);
+        Blockset partial_cov_area = instance_.alignedSlice(coverage[0],0,0.0);
+        Blockset full_cov_area = instance_.alignedSlice(coverage[1],0,0.0);
+
+        double full_area = instance_.getArea(full_cov_area,1,2);
+        double partial_area = full_area + instance_.getArea(partial_cov_area,1,2);
+
+        // Full coverage should always be less than actual volume
+        EXPECT_LE(full_area,area);
+        // Full + partial coverage should always be greater than actual volume
+        EXPECT_GE(partial_area,area);
+    }
+    std::cout << coverage[1].size() << std::endl;
+    std::cout << coverage[0].size() << std::endl;
+}
+
+
 // Test with a bounding box instead of a sphere
 // bounding box in this test has same length as
 // sphere radius in previous test

@@ -201,6 +201,22 @@ class Zealand
             return;
         }
 
+        // Watch out for arithmetic precision errors!
+        Blockset alignedSlice(const Blockset& blocks, int axis, double value)
+        {
+            Blockset sliced_blocks;
+
+            for (int i = 0; i < blocks.size(); i++)
+            {
+                unsigned long block = blocks[i];
+                AlignedBox3 box = getAlignedBox(block);
+
+                if (box.min[axis] < value && box.max[axis] >= value)
+                    sliced_blocks.push_back(block);
+            }
+            return sliced_blocks;
+        }
+
         template<class Shape>
         void refine(Coverage& coverage, const Shape& shape)
         {
@@ -310,6 +326,17 @@ class Zealand
                             z*block_size_z - scale_z/2 + block_size_z/2});
             
             return center;
+        }
+
+        double getArea(const Blockset& region, int axis_1, int axis_2)
+        {
+            double area = 0;
+            for (int i = 0; i < region.size(); i++)
+            {
+                int level = getLevel(region[i]);
+                area = area + block_sizes[axis_1][level] * block_sizes[axis_2][level];
+            }
+            return area;
         }
 
         double getVolume(const Blockset& region)
