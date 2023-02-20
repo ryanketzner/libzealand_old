@@ -33,10 +33,14 @@ public:
 
     bool contains(const AlignedBox3& box) override
     {
+        if (!gte::InContainer(box.min, cone))
+            return false;
+        else if (!gte::InContainer(box.max, cone))
+            return false;
+
         std::array<Vector3,8> vertices;
         box.GetVertices(vertices);
-
-        for (int i = 0; i < vertices.size(); i++)
+        for (int i = 1; i < vertices.size() - 1; i++)
         {
             // If any vertex is not in the container,
             // immediately terminate
