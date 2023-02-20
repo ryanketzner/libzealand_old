@@ -15,6 +15,17 @@ class ZealandTest : public ::testing::Test
         Zealand instance_;
 };
 
+TEST_F(ZealandTest, TestGetBox)
+{
+    unsigned long block = 1ul << 6;
+    int num = pow(8,5)*864;
+    for (int i = 0; i < num; i++);
+    {
+        AlignedBox3 box = instance_.getAlignedBox(1ul << 6);
+        box.min[1] = 0;
+    }
+}
+
 TEST_F(ZealandTest, TestRefine)
 {
     // Define the initial partial blockset as the eight level-0 quadrants

@@ -82,6 +82,12 @@ class SphericalPolyView : public RigidView
             return false;
         }
 
+        // AHH! Not Implemented!
+        bool contains(const Vector3& vector) override
+        {
+            return 0;
+        }
+
         bool contains (const AlignedBox3& box) override
         {
             if (not_covered)

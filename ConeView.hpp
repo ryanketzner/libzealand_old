@@ -31,6 +31,11 @@ public:
         return query(box,cone).intersect;
     }
 
+    bool contains(const Vector3& vector) override
+    {
+        return gte::InContainer(vector,cone);
+    }
+
     bool contains(const AlignedBox3& box) override
     {
         if (!gte::InContainer(box.min, cone))

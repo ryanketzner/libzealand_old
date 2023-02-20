@@ -33,6 +33,19 @@ class Zealand
             }
         }
 
+        // // Pregenerate boxes up to and including "level"
+        // void preprocess(unsigned int level)
+        // {
+        //     unsigned long largest = getLargestChild(1ul,level+1);
+        //     unsigned long smallest = 1ul << 3;
+
+        //     for (unsigned long i = smallest; i <= largest; i++)
+        //     {
+        //         prep_boxes.emplace_back(getAlignedBox(i));
+        //     }
+        //     preprocessed = true;
+        // }
+
         Coverage refine(const std::vector<VolumeFOV*>& shapes, const std::vector<VolumeFOV*>& not_shapes, int level)
         {
             // Initialize as partial coverage of super-block
@@ -78,12 +91,13 @@ class Zealand
             return false;
         }
 
-        bool allShapesIntersect(const AlignedBox3& box, const std::vector<VolumeFOV*>& shapes)
+        template <typename T>
+        bool allShapesIntersect(const T& t, const std::vector<VolumeFOV*>& shapes)
         {
             for (int k = 0; k < shapes.size(); k++)
             {
                 // if any shape fails to intersect, return false
-                if (!shapes[k]->intersects(box))
+                if (!shapes[k]->intersects(t))
                     return false;
             }
             return true;
@@ -101,12 +115,13 @@ class Zealand
             return false;
         }
 
-        bool allShapesCover(const AlignedBox3& box, const std::vector<VolumeFOV*>& shapes)
+        template <typename T>
+        bool allShapesCover(const T& t, const std::vector<VolumeFOV*>& shapes)
         {
             for (int k = 0; k < shapes.size(); k++)
             {
                 // if any shape fails to contain, return false
-                if (!shapes[k]->contains(box))
+                if (!shapes[k]->contains(t))
                     return false;
             }
             return true;
@@ -120,15 +135,33 @@ class Zealand
             // For each partially covered block
             for (int i = 0; i < coverage[0].size(); i++)
             {
+                unsigned long block = coverage[0][i];
                 //std::cout << "Block #: " << i << std::endl;
                 // Generate 8 children of each partially covered block
-                Block8 children = getChildren(coverage[0][i]);
+                Block8 children = getChildren(block);
+
+                // OPTIMIZATION CANDIDATE
+                Vector3 center = getCenter(block);
+
+                bool all_intersect = false;
+                bool all_no_cover = false;
+                if (allShapesCover(center,shapes))
+                    all_intersect = true; // we know all intersect
+                else
+                    all_no_cover = true; // we not all don't cover
+
+                // END OPTIMIZATION CANDIDATE
+
+
                 // Check coverage status of each child
                 for (int j = 0; j < 8; j++)
                 {
-                    AlignedBox3 box = getAlignedBox(children[j]);
+                    const AlignedBox3 box = getAlignedBox(children[j]);
 
-                    if (!allShapesIntersect(box,shapes))
+                    if (all_intersect)
+                    {
+                    }
+                    else if (!allShapesIntersect(box,shapes))
                         continue;
                     
 
@@ -140,7 +173,7 @@ class Zealand
                     // partially contained
 
                     // Check whether all shapes cover box
-                    if (!allShapesCover(box,shapes))
+                    if (all_no_cover || !allShapesCover(box,shapes))
                     {
                         // If any shape doesn't fully cover
                         // then the box is only partially contained
@@ -227,15 +260,37 @@ class Zealand
             uint_fast32_t x,y,z;
             libmorton::morton3D_64_decode(block, x, y, z);
 
-            double block_size_x = block_sizes[0][level];
-            double block_size_y = block_sizes[1][level];
-            double block_size_z = block_sizes[2][level];
+            int blocks_dim = getBlocksDim(level);
+            double block_size_x = scale_x/blocks_dim;
+            double block_size_y = scale_y/blocks_dim;
+            double block_size_z = scale_z/blocks_dim;
 
-            Vector3 min({x*block_size_x - block_sizes[0][0], y*block_size_y - block_sizes[1][0], z*block_size_z - block_sizes[2][0]});
+            Vector3 min({x*block_size_x - scale_x/2, y*block_size_y - scale_y/2, z*block_size_z - scale_z/2});
             Vector3 max({min[0] + block_size_x, min[1] + block_size_y, min[2] + block_size_z});
 
             return AlignedBox3(min,max);
         }
+
+        // Vector3 getCenter(unsigned long block)
+        // {
+        //     int level = getLevel(block);
+        //     block = block ^ terminator(level);
+
+        //     uint_fast32_t x,y,z;
+        //     libmorton::morton3D_64_decode(block, x, y, z);
+
+        //     int blocks_dim = getBlocksDim(level);
+        //     double block_size_x = scale_x/blocks_dim;
+        //     double block_size_y = scale_y/blocks_dim;
+        //     double block_size_z = scale_z/blocks_dim;
+
+        //     double center_x, center_y, center_z;
+        //     center_x = (x*block_size_x + block_size_x/2) - scale_x/2;
+        //     center_y = (z*block_size_y + block_size_y/2) - scale_y/2;
+        //     center_z = (z*block_size_z + block_size_z/2) - scale_z/2;
+
+        //     return Vector3({center_x, center_y, center_z});
+        // }
 
         Vector3 getCenter(unsigned long block)
         {
@@ -245,12 +300,16 @@ class Zealand
             uint_fast32_t x,y,z;
             libmorton::morton3D_64_decode(block, x, y, z);
 
-            double center_x, center_y, center_z;
-            center_x = (x*block_sizes[0][level] + block_sizes[0][level]/2) - block_sizes[0][0];
-            center_y = (z*block_sizes[1][level] + block_sizes[1][level]/2) - block_sizes[1][0];
-            center_z = (z*block_sizes[2][level] + block_sizes[2][level]/2) - block_sizes[2][0];
+            int blocks_dim = getBlocksDim(level);
+            double block_size_x = scale_x/blocks_dim;
+            double block_size_y = scale_y/blocks_dim;
+            double block_size_z = scale_z/blocks_dim;
 
-            return Vector3({center_x, center_y, center_z});
+            Vector3 center({x*block_size_x - scale_x/2 + block_size_x/2, 
+                            y*block_size_y - scale_y/2 + block_size_y/2,
+                            z*block_size_z - scale_z/2 + block_size_z/2});
+            
+            return center;
         }
 
         double getVolume(const Blockset& region)
@@ -278,10 +337,13 @@ class Zealand
         }
 
         // Public data members
-        double scale_x;
-        double scale_y;
-        double scale_z;
+        const double scale_x;
+        const double scale_y;
+        const double scale_z;
         double block_sizes[3][MAX_LEVEL + 1];
+
+        // std::vector<AlignedBox3> prep_boxes;
+        // bool preprocessed = false;
 };
 
 #endif

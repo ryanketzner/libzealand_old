@@ -36,6 +36,11 @@ public:
     //     return true;
     // }
 
+    bool contains(const Vector3& vector) override
+    {
+        return gte::InContainer(vector,sphere);
+    }
+
     bool contains(const AlignedBox3& box) override
     {
         if (!gte::InContainer(box.min, sphere))

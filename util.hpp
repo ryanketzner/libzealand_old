@@ -40,6 +40,12 @@ namespace libzealand
     using Intervalset = std::vector<Interval>;
     const int MAX_LEVEL = 20;
 
+    inline unsigned int getBlocksDim(unsigned int level)
+    {
+        //return pow(2,level+1);
+        return 1 << (level + 1);
+    }
+
     inline int getLevel(unsigned long block)
     {
         return MAX_LEVEL - __builtin_clzl(block)/3;

@@ -18,6 +18,12 @@ class GTEFOV : public VolumeFOV
             return query(box, shape).intersect;
         }
 
+        bool contains(const Vector3& vector) override
+        {
+            return gte::InContainer(vector,shape);
+        }
+
+
         bool contains (const AlignedBox3& box) override
         {
             std::array<Vector3,8> vertices;
