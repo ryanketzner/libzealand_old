@@ -46,7 +46,7 @@ class Zealand
         //     preprocessed = true;
         // }
 
-        Coverage refine(const std::vector<VolumeFOV*>& shapes, const std::vector<VolumeFOV*>& not_shapes, int level)
+        Coverage refine(const std::vector<VolumeFOV*>& shapes, const std::vector<VolumeFOV*>& not_shapes, int level) const
         {
             // Initialize as partial coverage of super-block
             //Coverage initial = getInitialCoverage();
@@ -64,7 +64,7 @@ class Zealand
         }
 
         template<class Shape>
-        Coverage refine(const Shape& shape, int level)
+        Coverage refine(const Shape& shape, int level) const
         {
             // Initialize as partial coverage of super-block
             //Coverage initial = getInitialCoverage();
@@ -80,7 +80,7 @@ class Zealand
             return initial;
         }
 
-        bool anyShapesIntersect(const AlignedBox3& box, const std::vector<VolumeFOV*>& shapes)
+        bool anyShapesIntersect(const AlignedBox3& box, const std::vector<VolumeFOV*>& shapes) const
         {
             for (int k = 0; k < shapes.size(); k++)
             {
@@ -92,7 +92,7 @@ class Zealand
         }
 
         template <typename T>
-        bool allShapesIntersect(const T& t, const std::vector<VolumeFOV*>& shapes)
+        bool allShapesIntersect(const T& t, const std::vector<VolumeFOV*>& shapes) const
         {
             for (int k = 0; k < shapes.size(); k++)
             {
@@ -104,7 +104,7 @@ class Zealand
         }
 
 
-        bool anyShapeCovers(const AlignedBox3& box, const std::vector<VolumeFOV*>& shapes)
+        bool anyShapeCovers(const AlignedBox3& box, const std::vector<VolumeFOV*>& shapes) const
         {
             for (int k = 0; k < shapes.size(); k++)
             {
@@ -116,7 +116,7 @@ class Zealand
         }
 
         template <typename T>
-        bool allShapesCover(const T& t, const std::vector<VolumeFOV*>& shapes)
+        bool allShapesCover(const T& t, const std::vector<VolumeFOV*>& shapes) const
         {
             for (int k = 0; k < shapes.size(); k++)
             {
@@ -127,7 +127,7 @@ class Zealand
             return true;
         }
 
-        void refine(Coverage& coverage, const std::vector<VolumeFOV*>& shapes, const std::vector<VolumeFOV*>& not_shapes)
+        void refine(Coverage& coverage, const std::vector<VolumeFOV*>& shapes, const std::vector<VolumeFOV*>& not_shapes) const
         {
             Blockset new_partial;
             new_partial.reserve(coverage[0].size());
@@ -202,7 +202,7 @@ class Zealand
         }
 
         // Watch out for arithmetic precision errors!
-        Blockset alignedSlice(const Blockset& blocks, int axis, double value)
+        Blockset alignedSlice(const Blockset& blocks, int axis, double value) const
         {
             Blockset sliced_blocks;
 
@@ -218,7 +218,7 @@ class Zealand
         }
 
         template<class Shape>
-        void refine(Coverage& coverage, const Shape& shape)
+        void refine(Coverage& coverage, const Shape& shape) const
         {
             Blockset new_partial;
 
@@ -268,7 +268,7 @@ class Zealand
             return true;
         }
 
-        AlignedBox3 getAlignedBox(unsigned long block)
+        AlignedBox3 getAlignedBox(unsigned long block) const
         {
             int level = getLevel(block);
             block = block ^ terminator(level);
@@ -308,7 +308,7 @@ class Zealand
         //     return Vector3({center_x, center_y, center_z});
         // }
 
-        Vector3 getCenter(unsigned long block)
+        Vector3 getCenter(unsigned long block) const
         {
             int level = getLevel(block);
             block = block ^ terminator(level);
@@ -328,7 +328,7 @@ class Zealand
             return center;
         }
 
-        double getArea(const Blockset& region, int axis_1, int axis_2)
+        double getArea(const Blockset& region, int axis_1, int axis_2) const
         {
             double area = 0;
             for (int i = 0; i < region.size(); i++)
@@ -339,7 +339,7 @@ class Zealand
             return area;
         }
 
-        double getVolume(const Blockset& region)
+        double getVolume(const Blockset& region) const
         {
             double volume = 0;
             for (int i = 0; i < region.size(); i++)
@@ -350,7 +350,7 @@ class Zealand
             return volume;
         }
 
-        double getVolume(const std::vector<unsigned long>& intervals, int multiplicity)
+        double getVolume(const std::vector<unsigned long>& intervals, int multiplicity) const
         {
             int level = getLevel(intervals[0]);
             double volume = 0;
