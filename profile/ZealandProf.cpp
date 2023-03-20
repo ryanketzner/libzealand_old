@@ -21,7 +21,7 @@ int main(void)
     std::vector<VolumeFOV*> shapes({sat,sphere_big});
     std::vector<VolumeFOV*> not_shapes({sphere_small});
 
-    int level = 4;
+    int level = 6;
     for (int i = 0; i < 864; i++)
     {
         zealand.refine(shapes,not_shapes,level);
