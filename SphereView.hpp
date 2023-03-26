@@ -15,6 +15,11 @@ public:
     {
     }
 
+    SphereView* clone() const override
+    {
+        return new SphereView(*this);
+    }
+
     bool intersects(const AlignedBox3& box) override
     {
         return query(box,sphere).intersect;

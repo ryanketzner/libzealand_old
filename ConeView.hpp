@@ -26,6 +26,11 @@ public:
     {
     }
 
+    ConeView* clone() const override
+    {
+        return new ConeView(*this);
+    }
+
     bool intersects(const AlignedBox3& box) override
     {
         return query(box,cone).intersect;

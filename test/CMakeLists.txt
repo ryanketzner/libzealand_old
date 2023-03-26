@@ -1,20 +1,15 @@
-add_executable(ZealandTest ZealandTest.cpp)
-add_executable(ZealandTest_Slow_0 ZealandTest_Slow_0.cpp)
-add_executable(ZealandTest_Slow ZealandTest_Slow.cpp)
-add_executable(ZealandTest_Compile ZealandTest_Compile.cpp)
+# Get all the .cpp files in the current directory
+file(GLOB CPP_FILES *.cpp)
 
 include_directories(${CMAKE_SOURCE_DIR})
 
 find_package(GTest REQUIRED)
 set(LIBS GTest::GTest GTest::Main)
 
-target_link_libraries(ZealandTest ${LIBS})
-target_link_libraries(ZealandTest_Slow ${LIBS})
-target_link_libraries(ZealandTest_Slow_0 ${LIBS})
-target_link_libraries(ZealandTest_Compile ${LIBS})
-
-# Add test to the build system
-add_test(ZealandTest ZealandTest)
-add_test(ZealandTest_Slow ZealandTest)
-add_test(ZealandTest_Slow_0 ZealandTest)
-add_test(ZealandTest_Compile ZealandTest)
+# Iterate through the .cpp files, creating executables and linking libraries
+foreach(file ${CPP_FILES})
+    get_filename_component(target_name ${file} NAME_WE)
+    add_executable(${target_name} ${file})
+    target_link_libraries(${target_name} ${LIBS})
+    add_test(${target_name} ${target_name})
+endforeach()

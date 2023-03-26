@@ -13,6 +13,11 @@ class GTEFOV : public VolumeFOV
         {
         }
 
+        GTEFOV* clone() const override
+        {
+            return new GTEFOV(*this);
+        }
+
         bool intersects (const AlignedBox3& box) override
         {
             return query(box, shape).intersect;

@@ -49,6 +49,11 @@ class SphericalPolyView : public RigidView
             rays.push_back({center,v4});
         }
 
+        SphericalPolyView* clone() const override
+        {
+            return new SphericalPolyView(*this);
+        }
+
         bool intersects (const AlignedBox3& box) override
         {
             gte::TIQuery<double,Ray3,AlignedBox3> query;
