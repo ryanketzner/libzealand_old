@@ -31,6 +31,30 @@ TEST(IOUtils,test_inputs_to_numeric)
     EXPECT_EQ(result,expected);
 }
 
+TEST(IOUtils, test_read_n_lines)
+{
+  const std::size_t num_lines = 10;
+  const std::size_t num_items = 6;
+  std::string filename = std::string(PROJECT_ROOT_DIR) + "/test/input/state_cartesian.csv";
+
+  std::ifstream ifs(filename);
+  std::vector<std::string> lines = IOUtils::read_n_lines(ifs, num_lines);
+
+  EXPECT_EQ(lines.size(),num_lines);
+}
+
+// TEST(IOUtils, test_inputs_to_numeric_and_read_n_lines)
+// {
+//   const std::size_t num_lines = 10;
+//   const std::size_t num_items = 6;
+//   std::string filename = std::string(PROJECT_ROOT_DIR) + "/test/input/state_cartesian.csv";
+
+//   std::ifstream ifs(filename);
+//   std::vector<std::string> lines = IOUtils::read_n_lines(ifs, num_lines);
+
+  
+// }
+
 int main(int argc, char** argv)
 {
   ::testing::InitGoogleTest(&argc, argv);

@@ -6,6 +6,8 @@
 #include <vector>
 #include <array>
 #include <iostream>
+#include <fstream>
+#include <stdexcept>
 
 namespace IOUtils
 {
@@ -50,6 +52,28 @@ namespace IOUtils
         std::vector<std::pair<unsigned int, std::array<double,array_size>>> lines;
 
         std::transform(string_lines.begin(),string_lines.end(),lines.begin(), input_to_numeric<array_size>);
+
+        return lines;
+    }
+
+    std::vector<std::string> read_n_lines(std::ifstream& ifs, int n)
+    {
+        std::vector<std::string> lines;
+        if (ifs.is_open())
+        {
+            std::string line;
+
+            int i = 0;
+            while (i < n && std::getline(ifs,line))
+            {
+                lines.push_back(line);
+                i++;
+            }
+        }
+        else
+        {
+            throw std::runtime_error("Could not open file.");
+        }
 
         return lines;
     }
