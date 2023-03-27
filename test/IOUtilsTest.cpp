@@ -1,12 +1,12 @@
 #include <array>
 
-#include "IOUtil.hpp"
+#include "IOUtils.hpp"
 #include "gtest/gtest.h"
 
 TEST(IOUtils,test_input_to_numeric)
 {
     const std::string line("1, 3.5694, 3453, 43345.44, 4543.0, 34534.4, 34534.4\n");
-    std::pair<unsigned int,std::array<double,6>> result = IOUtil::input_to_numeric<6>(line);
+    std::pair<unsigned int,std::array<double,6>> result = IOUtils::input_to_numeric<6>(line);
 
     std::pair<unsigned int,std::array<double,6>> expected({1,{3.5694, 3453, 43345.44, 4543.0, 34534.4, 34534.4}});
     EXPECT_EQ(result,expected);
@@ -21,7 +21,7 @@ TEST(IOUtils,test_inputs_to_numeric)
     const std::string line3("1, 3.5694, 3453, 43345.44, 4543.0, 34534.4, 34534.4\n");
     std::array<std::string,num_lines> lines({line1,line2,line3});
 
-    std::array<std::pair<unsigned int,std::array<double,num_items>>,num_lines> result = IOUtil::inputs_to_numeric<num_items, num_lines>(lines);
+    std::array<std::pair<unsigned int,std::array<double,num_items>>,num_lines> result = IOUtils::inputs_to_numeric<num_items, num_lines>(lines);
 
     std::pair<unsigned int,std::array<double,6>> expected1({1,{3.5694, 3453, 43345.44, 4543.0, 34534.4, 34534.4}});
     std::pair<unsigned int,std::array<double,6>> expected2({1,{3.5694, 3453, 43345.44, 4543.0, 34534.4, 34534.4}});
