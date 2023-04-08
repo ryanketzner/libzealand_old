@@ -7,7 +7,7 @@ add_executable(IOUtilsTest IOUtilsTest.cpp)
 include_directories(${CMAKE_SOURCE_DIR})
 
 find_package(GTest REQUIRED)
-set(LIBS GTest::GTest GTest::Main)
+set(LIBS GTest::GTest GTest::Main fmt)
 
 target_link_libraries(ZealandTest ${LIBS})
 target_link_libraries(ZealandTest_Slow ${LIBS})

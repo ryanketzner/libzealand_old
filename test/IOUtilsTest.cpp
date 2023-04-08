@@ -1,7 +1,12 @@
 #include <array>
 
 #include "IOUtils.hpp"
+#include "util.hpp"
 #include "gtest/gtest.h"
+#include "SphereView.hpp"
+#include "GTEFOV.hpp"
+
+using namespace libzealand;
 
 TEST(IOUtils,test_input_to_numeric)
 {
@@ -41,6 +46,30 @@ TEST(IOUtils, test_read_n_lines)
   std::vector<std::string> lines = IOUtils::read_n_lines(ifs, num_lines);
 
   EXPECT_EQ(lines.size(),num_lines);
+}
+
+TEST(IOUtils, test_print_blockset)
+{
+  std::string filename = std::string(PROJECT_ROOT_DIR) + "/build/test/output/blockset.csv";
+
+  const double scale = 10.0;
+  Zealand octree(scale);
+
+  Vector3 center({0.0,0.0,0.0});
+  Vector3 dir({1.0,0.0,0.0});
+  double radius = 3.0;
+
+  std::vector<VolumeFOV*> shapes;
+  std::vector<VolumeFOV*> not_shapes;
+  VolumeFOV* sphere = new SphereView(center,radius);
+  shapes.push_back(sphere);
+
+  Halfspace3 cutting(center,0.0);
+  VolumeFOV* half = new GTEFOV<Halfspace3>(cutting);
+
+  Coverage cov = octree.refine(shapes,not_shapes,4);
+  
+  IOUtils::print_blockset(octree,cov[1],filename);
 }
 
 // TEST(IOUtils, test_inputs_to_numeric_and_read_n_lines)

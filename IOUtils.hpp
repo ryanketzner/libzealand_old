@@ -1,5 +1,5 @@
-#ifndef IOUTIL_HPP
-#define IOUTIL_HPP
+#ifndef IOUTILS_HPP
+#define IOUTILS_HPP
 
 #include <sstream>
 #include <string>
@@ -8,9 +8,16 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <algorithm>
+
+#include <fmt/format.h>
+
+#include "util.hpp"
+#include "Zealand.hpp"
 
 namespace IOUtils
 {
+    using namespace libzealand;
     // Template parameter is array size.
     // Takes a single line of a csv string as input. 
     // Returns an std::pair. The first item is an integer,
@@ -37,7 +44,7 @@ namespace IOUtils
     }
 
     template <std::size_t array_size, std::size_t num_lines>
-    std::array<std::pair<unsigned int, std::array<double,array_size>>,num_lines> inputs_to_numeric(const std::array<std::string, num_lines>& string_lines)
+    inline std::array<std::pair<unsigned int, std::array<double,array_size>>,num_lines> inputs_to_numeric(const std::array<std::string, num_lines>& string_lines)
     {
         std::array<std::pair<unsigned int, std::array<double,array_size>>,num_lines> lines;
 
@@ -47,7 +54,7 @@ namespace IOUtils
     }
 
     template <std::size_t array_size>
-    std::vector<std::pair<unsigned int, std::array<double,array_size>>> inputs_to_numeric(const std::vector<std::string>& string_lines)
+    inline std::vector<std::pair<unsigned int, std::array<double,array_size>>> inputs_to_numeric(const std::vector<std::string>& string_lines)
     {
         std::vector<std::pair<unsigned int, std::array<double,array_size>>> lines;
 
@@ -56,7 +63,7 @@ namespace IOUtils
         return lines;
     }
 
-    std::vector<std::string> read_n_lines(std::ifstream& ifs, int n)
+    inline std::vector<std::string> read_n_lines(std::ifstream& ifs, int n)
     {
         std::vector<std::string> lines;
         if (ifs.is_open())
@@ -77,6 +84,34 @@ namespace IOUtils
 
         return lines;
     }
+    
+    template <typename T>
+    inline void append_line(const std::vector<T>& vec, std::string filename)
+    {
+        std::ofstream ofs(filename);
+
+        if (ofs.is_open())
+        {
+            ofs << fmt::format("{}\n", fmt::join(vec, ","));
+        }
+    }
+
+    // inline void print_blockset(const Zealand& octree, Blockset blocks, std::string filename)
+    // {
+    //     std::ofstream ofs(filename);
+    //     std::vector<AlignedBox3> boxes(blocks.size());
+
+    //     std::transform(blocks.begin(),blocks.end(),boxes.begin(), [&octree](unsigned long block){return octree.getAlignedBox(block);});
+
+
+    //     for (int i = 0; i < boxes.size(); i++)
+    //     {
+    //         AlignedBox3 box = boxes[i];
+    //         ofs << fmt::format("{},{},{},{},{},{}\n", box.min[0], box.min[1], box.min[2], box.max[0], box.max[1], box.max[2]);
+    //     }
+
+    //     ofs.close();
+    // }
 }
 
 #endif

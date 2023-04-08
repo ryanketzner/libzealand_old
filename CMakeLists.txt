@@ -13,6 +13,7 @@ get_filename_component(PROJECT_ROOT_DIR "${CMAKE_SOURCE_DIR}" ABSOLUTE)
 
 # Pass the project root directory as a preprocessor definition
 add_definitions(-DPROJECT_ROOT_DIR="${PROJECT_ROOT_DIR}")
+add_definitions(-DPOJECT_BUILD_DIR="${PROJECT_ROOT_DIR}/build")
 
 
 include_directories(PUBLIC lib/libmorton/include/libmorton lib/GeometricTools/GTE)
