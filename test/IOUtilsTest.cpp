@@ -58,18 +58,19 @@ TEST(IOUtils, test_print_blockset)
   Vector3 center({0.0,0.0,0.0});
   Vector3 dir({1.0,0.0,0.0});
   double radius = 3.0;
+  double x_slice = .01;
 
   std::vector<VolumeFOV*> shapes;
   std::vector<VolumeFOV*> not_shapes;
   VolumeFOV* sphere = new SphereView(center,radius);
   shapes.push_back(sphere);
 
-  Halfspace3 cutting(center,0.0);
-  VolumeFOV* half = new GTEFOV<Halfspace3>(cutting);
+  // Halfspace3 cutting(center,0.0);
+  //VolumeFOV* half = new GTEFOV<Halfspace3>(cutting);
 
-  Coverage cov = octree.refine(shapes,not_shapes,4);
+  Coverage cov = octree.refine(shapes,not_shapes,3);
   
-  IOUtils::print_blockset(octree,cov[1],filename);
+  IOUtils::print_blockset(octree,octree.alignedLeq(cov[1],0,x_slice),filename);
 }
 
 // TEST(IOUtils, test_inputs_to_numeric_and_read_n_lines)

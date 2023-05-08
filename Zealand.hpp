@@ -130,7 +130,7 @@ class Zealand
         void refine(Coverage& coverage, const std::vector<VolumeFOV*>& shapes, const std::vector<VolumeFOV*>& not_shapes) const
         {
             Blockset new_partial;
-            new_partial.reserve(coverage[0].size());
+            new_partial.reserve(coverage[0].size()*4);
 
             // For each partially covered block
             for (int i = 0; i < coverage[0].size(); i++)
@@ -215,6 +215,21 @@ class Zealand
                     sliced_blocks.push_back(block);
             }
             return sliced_blocks;
+        }
+
+        Blockset alignedLeq(const Blockset& blocks, int axis, double value) const
+        {
+            Blockset result;
+
+            for (int i = 0; i < blocks.size(); i++)
+            {
+                unsigned long block = blocks[i];
+                AlignedBox3 box = getAlignedBox(block);
+
+                if (box.max[axis] <= value)
+                    result.push_back(block);
+            }
+            return result;
         }
 
         template<class Shape>

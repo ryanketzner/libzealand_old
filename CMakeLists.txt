@@ -21,3 +21,5 @@ include_directories(PUBLIC lib/libmorton/include/libmorton lib/GeometricTools/GT
 # Include the test directory
 add_subdirectory(test)
 add_subdirectory(profile)
+add_subdirectory(examples)
+add_subdirectory(benchmarks)

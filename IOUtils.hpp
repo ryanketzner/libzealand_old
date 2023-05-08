@@ -96,22 +96,22 @@ namespace IOUtils
         }
     }
 
-    // inline void print_blockset(const Zealand& octree, Blockset blocks, std::string filename)
-    // {
-    //     std::ofstream ofs(filename);
-    //     std::vector<AlignedBox3> boxes(blocks.size());
+    inline void print_blockset(const Zealand& octree, Blockset blocks, std::string filename)
+    {
+        std::ofstream ofs(filename);
+        std::vector<AlignedBox3> boxes(blocks.size());
 
-    //     std::transform(blocks.begin(),blocks.end(),boxes.begin(), [&octree](unsigned long block){return octree.getAlignedBox(block);});
+        std::transform(blocks.begin(),blocks.end(),boxes.begin(), [&octree](unsigned long block){return octree.getAlignedBox(block);});
 
 
-    //     for (int i = 0; i < boxes.size(); i++)
-    //     {
-    //         AlignedBox3 box = boxes[i];
-    //         ofs << fmt::format("{},{},{},{},{},{}\n", box.min[0], box.min[1], box.min[2], box.max[0], box.max[1], box.max[2]);
-    //     }
+        for (int i = 0; i < boxes.size(); i++)
+        {
+            AlignedBox3 box = boxes[i];
+            ofs << fmt::format("{},{},{},{},{},{}\n", box.min[0], box.min[1], box.min[2], box.max[0], box.max[1], box.max[2]);
+        }
 
-    //     ofs.close();
-    // }
+        ofs.close();
+    }
 }
 
 #endif
