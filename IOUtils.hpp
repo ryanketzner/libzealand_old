@@ -112,6 +112,32 @@ namespace IOUtils
 
         ofs.close();
     }
+
+    // filename is the base filename
+    // inline void print_multiplicities(const std::vector<std::vector<unsigned int>>& multiplicities, std::string filename)
+    // {
+    //     std::string ext = ".csv";
+    //     for (int i = 0; i < multiplicities.size(); i++)
+    //     {
+    //         if (!multiplicities[i].empty())
+    //         {
+    //             std::string filename_num = filename + std::to_string(i) + ext;
+    //             print_multiplicity(multiplicities[i], filename);
+    //         }
+    //     }
+    // }
+
+    // inline void print_multiplicity(const std::vector<unsigned int>& multiplicity, std::string filename)
+    // {
+    //     std::ofstream ofs(filename);
+    //     for (int i = 0; i < multiplicity.size() - 1; i+=2)
+    //     {
+    //         unsigned int start = multiplicity[i];
+    //         unsigned int stop = multiplicity[i+1];
+
+    //         ofs << fmt::format("{},{}")
+    //     }
+    // }
 }
 
 #endif

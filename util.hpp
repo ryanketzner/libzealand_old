@@ -4,6 +4,8 @@
 #include <bitset>
 #include <vector>
 #include <iostream>
+#include <algorithm>
+
 #include "morton.h"
 #include "Mathematics/Vector.h"
 #include "Mathematics/Vector3.h"
@@ -79,15 +81,16 @@ namespace libzealand
 
     inline unsigned long set3NBits(int n)
     {
-        unsigned long mask = 0;
-        for (int i = 0; i < n; i++)
-        {
-            // Set to 111 at i = 0
-            // Set to 111111 at i = 1
-            // ...
-            mask = (mask << 3) | 7;
-        }
-        return mask;
+        // unsigned long mask = 0;
+        // for (int i = 0; i < n; i++)
+        // {
+        //     // Set to 111 at i = 0
+        //     // Set to 111111 at i = 1
+        //     // ...
+        //     mask = (mask << 3) | 7;
+        // }
+        // return mask;
+        return (1ul << (3*n)) - 1;
     }
 
     inline unsigned long getSmallestChild(unsigned long block, int depth)
@@ -319,6 +322,24 @@ namespace libzealand
         multiplicities[run_mult - 1].emplace_back(run_start);
         multiplicities[run_mult - 1].emplace_back(run_stop);
         std::cout << "Made run (" << run_start << ", " << run_stop << ") with multiplicity " << run_mult << std::endl;
+
+        return multiplicities;
+    }
+
+    inline std::vector<std::vector<unsigned long>> toIntervals(const std::vector<Blockset>& forest)
+    {
+        Rangeset combined_rangeset; // should prealocate
+
+        // Add each octree in forest to the combined rangeset
+        for (int i = 0; i < forest.size(); i++)
+        {
+            Rangeset rangeset = toIntervalBounds(forest[i]);
+            // Append to the combined rangeset
+            combined_rangeset.insert(combined_rangeset.end(),rangeset.begin(),rangeset.end());
+        }
+        std::sort(combined_rangeset.begin(),combined_rangeset.end());
+
+        std::vector<std::vector<unsigned long>> multiplicities = toIntervals(combined_rangeset);
 
         return multiplicities;
     }
