@@ -4,7 +4,7 @@ file(GLOB CPP_FILES *.cpp)
 include_directories(${CMAKE_SOURCE_DIR})
 
 find_package(GTest REQUIRED)
-set(LIBS GTest::GTest GTest::Main)
+set(LIBS GTest::GTest GTest::Main fmt)
 
 # Iterate through the .cpp files, creating executables and linking libraries
 foreach(file ${CPP_FILES})
