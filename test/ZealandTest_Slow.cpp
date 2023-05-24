@@ -35,7 +35,7 @@ TEST_F(ZealandTest, Testy)
     Coverage initial_1 = getInitialCoverage();
     Coverage initial_2 = getInitialCoverage();
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 7; i++)
     {
         instance_.refine(initial_1, sphere_1);
         instance_.refine(initial_2, sphere_2);
@@ -65,6 +65,52 @@ TEST_F(ZealandTest, Testy)
 
     //EXPECT_EQ(multiplicities,expected_multiplicities);
 }
+
+// Check that two identical spheres create only
+// coverage of multiplicity two. Verify that the volume
+// of the resulting recombined octree representation is the same as the
+// original octree representation
+TEST_F(ZealandTest, TestRecombine)
+{
+    Vector3 center({0.0,0.0,0.0});
+    double radius = 5000;
+
+    Sphere3 sphere_1(center,radius);
+    Sphere3 sphere_2(center,radius);
+
+    Coverage initial_1 = getInitialCoverage();
+    Coverage initial_2 = getInitialCoverage();
+
+    for (int i = 0; i < 7; i++)
+    {
+        instance_.refine(initial_1, sphere_1);
+        instance_.refine(initial_2, sphere_2);
+    }
+    int level = getLevel(initial_1[0][0]);
+
+    double volume_blockset = instance_.getVolume(initial_1[1]);
+    Rangeset set_1 = toIntervalBounds(initial_1[1]);
+    Rangeset set_2 = toIntervalBounds(initial_2[1]);
+
+    //EXPECT_TRUE(std::is_sorted(set_1.begin(), set_1.end()));
+    //EXPECT_TRUE(std::is_sorted(set_2.begin(), set_2.end()));
+    std::sort(set_1.begin(), set_1.end());
+    std::sort(set_2.begin(),set_2.end());
+
+    Rangeset combined;
+    std::merge(set_1.begin(),set_1.end(),set_2.begin(),set_2.end(),std::back_inserter(combined));
+
+    std::vector<std::vector<unsigned long>> multiplicities = toIntervals(combined);
+    std::vector<std::vector<unsigned long>> expected_multiplicities({{}});
+
+    Blockset recombined_blockset = recombine(multiplicities[1]);
+    double volume = instance_.getVolume(recombined_blockset);
+
+    EXPECT_EQ(volume_blockset,volume);
+
+    //EXPECT_EQ(multiplicities,expected_multiplicities);
+}
+
 
 TEST_F(ZealandTest, TestHollowSphere)
 {

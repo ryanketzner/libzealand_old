@@ -623,6 +623,63 @@ TEST_F(ZealandTest, TestLocateRegion)
     }
 }
 
+TEST_F(ZealandTest, TestIntervalToCells)
+{
+    unsigned long start = 0b1000;
+    unsigned long stop = 0b1001;
+    std::vector<unsigned long> cells;
+
+    interval_to_cells(start,stop,cells);
+
+    std::vector<unsigned long> expected_cells({0b1000,0b1001});
+
+    EXPECT_EQ(cells,expected_cells);
+}
+
+// start == stop
+TEST_F(ZealandTest, TestIntervalToCells_2)
+{
+    unsigned long start = 0b1000;
+    unsigned long stop = 0b1000;
+    std::vector<unsigned long> cells;
+
+    interval_to_cells(start,stop,cells);
+
+    std::vector<unsigned long> expected_cells({0b1000});
+
+    EXPECT_EQ(cells,expected_cells);
+}
+
+TEST_F(ZealandTest, TestIntervalToCells_3)
+{
+    unsigned long start = 0b1001;
+    unsigned long stop = 0b1110;
+    std::vector<unsigned long> cells;
+
+    interval_to_cells(start,stop,cells);
+
+    std::vector<unsigned long> expected_cells({0b1001,0b1010,0b1011,0b1100,0b1101,0b1110});
+
+    EXPECT_EQ(cells,expected_cells);
+}
+
+// Integration test using shape
+TEST_F(ZealandTest, TestIntervalToCells_4)
+{
+    unsigned long start = 0b1001;
+    unsigned long stop = 0b1110;
+    std::vector<unsigned long> cells;
+
+    interval_to_cells(start,stop,cells);
+
+    std::vector<unsigned long> expected_cells({0b1001,0b1010,0b1011,0b1100,0b1101,0b1110});
+
+    EXPECT_EQ(cells,expected_cells);
+}
+
+
+
+
 
 int main(int argc, char** argv)
 {

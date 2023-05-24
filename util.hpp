@@ -344,6 +344,73 @@ namespace libzealand
         return multiplicities;
     }
 
+    // start and stop must be level-designated
+    // and on same level of morton curve!
+    inline void interval_to_cells(unsigned long start, unsigned long stop, Blockset& cells)
+    {
+        int penalty = 0;
+        while (start < stop)
+        {                
+            int cell_lvl_less = (__builtin_ctzl(start) / 3) - penalty;
+
+            // Largest z-value on original curve of largest sibling block
+            // after enough penalties, z_stop will equal start!
+            unsigned long z_stop = start | set3NBits(cell_lvl_less + 1);
+
+            if (z_stop > stop)
+            {
+                if (cell_lvl_less == 0)
+                {
+                    for (int j = start; j <= stop; j++)
+                    {
+                        cells.push_back(j);
+                    }
+                    return;
+                }
+
+                penalty++;
+                continue;
+            }
+
+            unsigned long block_start = start >> (cell_lvl_less*3); // parent
+            unsigned long block_stop = block_start | set3NBits(1); // largest sibling
+
+
+            if (block_start == block_stop)
+            {
+                cells.push_back(block_start);
+            }
+            else
+            {
+                // double check for off by one error when testing
+                for (unsigned long j = block_start; j <= block_stop; j++)
+                {
+                    cells.push_back(j);
+                }
+                penalty = 0;
+            }
+
+            start = z_stop + 1;
+        }
+
+        if (start == stop)
+            cells.push_back(start);
+    }
+
+    inline Blockset recombine(const std::vector<unsigned long>& intervals)
+    {
+        Blockset cells;
+        int z_lvl = getLevel(intervals[0]);
+        for (int i = 0; i < intervals.size() - 1; i += 2)
+        {
+            unsigned long start = intervals[i];
+            unsigned long stop = intervals[i+1];
+
+            interval_to_cells(start,stop,cells);
+        }
+        return cells;
+    }
+
     inline unsigned long locateRegion(unsigned long lower_block, unsigned long upper_block)
     {
         //std::cout << std::bitset<64>(lower_block) << std::endl;
