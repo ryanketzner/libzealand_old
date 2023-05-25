@@ -390,30 +390,31 @@ namespace libzealand
             // Difference between level of proposed cell and morton curve level
             int cell_lvl_less = (__builtin_ctzl(start) / 3);
 
-            // Largest z-value on original curve of largest sibling block
-            unsigned long z_stop = start | set3NBits(cell_lvl_less + 1);
+            // Largest z-value on original curve of candidate block
+            unsigned long z_stop = start | set3NBits(cell_lvl_less);
 
             while (z_stop > stop)
             {
-                if (cell_lvl_less == 0)
-                {
-                    for (int j = start; j <= stop; j++)
-                    {
-                        cells.push_back(j);
-                    }
-                    return;
-                }
+                // Don't think this is needed now
+                // if (cell_lvl_less == 0)
+                // {
+                //     for (int j = start; j <= stop; j++)
+                //         cells.push_back(j);
+
+                //     return;
+                // }
 
                 cell_lvl_less--;
 
-                z_stop = start | set3NBits(cell_lvl_less + 1);
+                z_stop = start | set3NBits(cell_lvl_less);
             }
 
             unsigned long block_start = start >> (cell_lvl_less*3); // parent
-            unsigned long block_stop = block_start | set3NBits(1); // largest sibling
+            //unsigned long block_stop = block_start | set3NBits(1); // largest sibling
 
-            for (unsigned long j = block_start; j <= block_stop; j++)
-                cells.push_back(j);
+            cells.push_back(block_start);
+            // for (unsigned long j = block_start; j <= block_stop; j++)
+            //     cells.push_back(j);
 
             start = z_stop + 1;
         }
@@ -427,6 +428,9 @@ namespace libzealand
 
         if (intervals.size() == 0)
             return cells;
+
+        // There will be at least as many blocks as there are intervals.
+        cells.reserve(intervals.size());
 
         for (int i = 0; i < intervals.size() - 1; i += 2)
         {
