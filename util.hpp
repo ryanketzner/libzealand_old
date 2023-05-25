@@ -116,6 +116,8 @@ namespace libzealand
         return Range({largest_child,1});
     }
 
+    // Need to make version of this which takes level as input
+    // in order to overlay octrees at different levels
     inline Rangeset toIntervalBounds(const Blockset& blockset)
     {
         if (blockset.size() == 0)
@@ -128,6 +130,26 @@ namespace libzealand
         {
             int block_level = getLevel(blockset[i]);
             int depth = max_level - block_level;
+            intervals.emplace_back(getRangeStart(blockset[i],depth));
+            intervals.emplace_back(getRangeStop(blockset[i],depth));
+        }
+
+        // Q: RVO performed here?
+        return intervals;
+    }
+
+    // Not yet tested
+    inline Rangeset toIntervalBounds(const Blockset& blockset, int level)
+    {
+        if (blockset.size() == 0)
+        std::cout << "Exception" << std::endl;
+
+        Rangeset intervals;
+
+        for (int i = 0; i < blockset.size(); i++)
+        {
+            int block_level = getLevel(blockset[i]);
+            int depth = level - block_level;
             intervals.emplace_back(getRangeStart(blockset[i],depth));
             intervals.emplace_back(getRangeStop(blockset[i],depth));
         }
@@ -212,7 +234,7 @@ namespace libzealand
             if (interval_bounds[i].second == 0) // open
             {
                 multiplicity++;
-                std::cout << "Open at: " << block << std::endl;
+                //std::cout << "Open at: " << block << std::endl;
 
                 // open -> closed OR open -> diff
                 if (interval_bounds[i+1].second == 1 || interval_bounds[i+1].first != block) // has volume!
@@ -235,7 +257,7 @@ namespace libzealand
                                 multiplicities[run_mult - 1].emplace_back(run_stop);
                             }
                             //std::cout << "Ended run at: " << run_stop << " with multiplicity " << run_mult << std::endl;
-                            std::cout << "Made run (" << run_start << ", " << run_stop << ") with multiplicity " << run_mult << std::endl;
+                            //std::cout << "Made run (" << run_start << ", " << run_stop << ") with multiplicity " << run_mult << std::endl;
 
                             // start the next run !
                             run = true;
@@ -291,7 +313,7 @@ namespace libzealand
                                 multiplicities[run_mult - 1].push_back(run_start);
                                 multiplicities[run_mult - 1].push_back(run_stop);
                             }
-                            std::cout << "Made run (" << run_start << ", " << run_stop << ") with multiplicity " << run_mult << std::endl;
+                            //std::cout << "Made run (" << run_start << ", " << run_stop << ") with multiplicity " << run_mult << std::endl;
 
                             // start the next run !
                             // when starting run from a closed block
@@ -321,7 +343,7 @@ namespace libzealand
         unsigned long run_stop = interval_bounds[i].first;
         multiplicities[run_mult - 1].emplace_back(run_start);
         multiplicities[run_mult - 1].emplace_back(run_stop);
-        std::cout << "Made run (" << run_start << ", " << run_stop << ") with multiplicity " << run_mult << std::endl;
+        //std::cout << "Made run (" << run_start << ", " << run_stop << ") with multiplicity " << run_mult << std::endl;
 
         return multiplicities;
     }
@@ -330,12 +352,26 @@ namespace libzealand
     {
         Rangeset combined_rangeset; // should prealocate
 
+        int largest_level = 0;
+        for (int i = 0; i < forest.size(); i++)
+        {
+            if (forest[i].size() != 0)
+            {
+                int level = getLevel(forest[i].back());
+                if (level > largest_level)
+                    largest_level = level;
+            }
+        }
+
         // Add each octree in forest to the combined rangeset
         for (int i = 0; i < forest.size(); i++)
         {
-            Rangeset rangeset = toIntervalBounds(forest[i]);
-            // Append to the combined rangeset
-            combined_rangeset.insert(combined_rangeset.end(),rangeset.begin(),rangeset.end());
+            if (forest[i].size() != 0)
+            {
+                Rangeset rangeset = toIntervalBounds(forest[i],largest_level);
+                // Append to the combined rangeset
+                combined_rangeset.insert(combined_rangeset.end(),rangeset.begin(),rangeset.end());
+            }
         }
         std::sort(combined_rangeset.begin(),combined_rangeset.end());
 
@@ -350,7 +386,8 @@ namespace libzealand
     {
         int penalty = 0;
         while (start < stop)
-        {                
+        {   
+            // Difference between level of cell and morton curve level
             int cell_lvl_less = (__builtin_ctzl(start) / 3) - penalty;
 
             // Largest z-value on original curve of largest sibling block
@@ -400,15 +437,35 @@ namespace libzealand
     inline Blockset recombine(const std::vector<unsigned long>& intervals)
     {
         Blockset cells;
-        int z_lvl = getLevel(intervals[0]);
+
+        if (intervals.size() == 0)
+            return cells;
+
         for (int i = 0; i < intervals.size() - 1; i += 2)
         {
-            unsigned long start = intervals[i];
-            unsigned long stop = intervals[i+1];
+            unsigned long start = intervals.at(i);
+            unsigned long stop = intervals.at(i+1);
 
             interval_to_cells(start,stop,cells);
         }
         return cells;
+    }
+
+    inline std::vector<Blockset> octreeMultiplicities(const std::vector<Blockset>& forest)
+    {
+        std::vector<std::vector<unsigned long>> interval_mults = toIntervals(forest);
+
+        // Number of octree multiplicities should
+        // of course be the same as the number
+        // of interval multiplicities
+        std::vector<Blockset> octree_mults(interval_mults.size());
+
+        for (int i = 0; i < octree_mults.size(); i++)
+        {
+            octree_mults[i] = recombine(interval_mults[i]); // major error fixed?
+        }
+
+        return octree_mults;
     }
 
     inline unsigned long locateRegion(unsigned long lower_block, unsigned long upper_block)

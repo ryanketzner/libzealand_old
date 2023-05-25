@@ -356,6 +356,9 @@ class Zealand
 
         double getVolume(const Blockset& region) const
         {
+            if (region.size() == 0)
+                return 0;
+
             double volume = 0;
             for (int i = 0; i < region.size(); i++)
             {
@@ -367,6 +370,9 @@ class Zealand
 
         double getVolume(const std::vector<unsigned long>& intervals, int multiplicity) const
         {
+            if (intervals.size() == 0)
+                return 0;
+
             int level = getLevel(intervals[0]);
             double volume = 0;
             double block_volume = block_sizes[0][level] * block_sizes[1][level] * block_sizes[2][level];
