@@ -384,17 +384,16 @@ namespace libzealand
     // and on same level of morton curve!
     inline void interval_to_cells(unsigned long start, unsigned long stop, Blockset& cells)
     {
-        int penalty = 0;
+        // Alternatively, can make conditional <= and remove line after looop
         while (start < stop)
         {   
-            // Difference between level of cell and morton curve level
-            int cell_lvl_less = (__builtin_ctzl(start) / 3) - penalty;
+            // Difference between level of proposed cell and morton curve level
+            int cell_lvl_less = (__builtin_ctzl(start) / 3);
 
             // Largest z-value on original curve of largest sibling block
-            // after enough penalties, z_stop will equal start!
             unsigned long z_stop = start | set3NBits(cell_lvl_less + 1);
 
-            if (z_stop > stop)
+            while (z_stop > stop)
             {
                 if (cell_lvl_less == 0)
                 {
@@ -405,31 +404,19 @@ namespace libzealand
                     return;
                 }
 
-                penalty++;
-                continue;
+                cell_lvl_less--;
+
+                z_stop = start | set3NBits(cell_lvl_less + 1);
             }
 
             unsigned long block_start = start >> (cell_lvl_less*3); // parent
             unsigned long block_stop = block_start | set3NBits(1); // largest sibling
 
-
-            if (block_start == block_stop)
-            {
-                cells.push_back(block_start);
-            }
-            else
-            {
-                // double check for off by one error when testing
-                for (unsigned long j = block_start; j <= block_stop; j++)
-                {
-                    cells.push_back(j);
-                }
-                penalty = 0;
-            }
+            for (unsigned long j = block_start; j <= block_stop; j++)
+                cells.push_back(j);
 
             start = z_stop + 1;
         }
-
         if (start == stop)
             cells.push_back(start);
     }
