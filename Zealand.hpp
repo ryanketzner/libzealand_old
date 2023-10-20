@@ -11,6 +11,10 @@ class Zealand
 {
     public:
 
+        Zealand() : Zealand(1.0)
+        {
+        }
+
         Zealand(Real scale) : 
         Zealand (scale, scale, scale)
         {
@@ -45,6 +49,53 @@ class Zealand
         //     }
         //     preprocessed = true;
         // }
+
+        void refine(Coverage& coverage, std::function<bool(const AlignedBox3&)> inter,
+            std::function<bool(const AlignedBox3&)> cont) const
+        {
+            Blockset new_partial;
+
+            // Loop over each partially covered block
+            for (int i = 0; i < coverage[0].size(); i++)
+            {
+                // Generate 8 children of each partially covered block
+                Block8 children = getChildren(coverage[0][i]);
+                // Check coverage status of each child
+                for (int j = 0; j < 8; j++)
+                {
+                    AlignedBox3 box = getAlignedBox(children[j]);
+
+                    if (inter(box))
+                    {
+                        if (cont(box))
+                            coverage[1].push_back(children[j]);
+                        else
+                            new_partial.push_back(children[j]);
+                    }
+                }
+            }
+
+            // Update partial coverage blockset
+            coverage[0] = std::move(new_partial);
+
+            return;
+        }
+
+        Coverage refine(std::function<bool(const AlignedBox3&)> inter,
+            std::function<bool(const AlignedBox3&)> cont, int level) const
+        {
+            // Initialize as partial coverage of super-block
+            Blockset partial({1ul});
+            Blockset full;
+            Coverage initial({partial,full});
+
+            for (int i = 0; i <= level; i++)
+            {
+                refine(initial,inter,cont);
+            }
+
+            return initial;
+        }
 
         Coverage refine(const std::vector<VolumeFOV*>& shapes, const std::vector<VolumeFOV*>& not_shapes, int level) const
         {
