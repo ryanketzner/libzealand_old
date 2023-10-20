@@ -22,7 +22,7 @@ class ZealandTest : public ::testing::Test
 TEST_F(ZealandTest, TestSphereView)
 {
     Vector3 center({0.0,0.0,0.0});
-    double radius = 4;
+    Real radius = 4;
     RigidView* sphere = new SphereView(center,radius);
 }
 
@@ -47,7 +47,7 @@ TEST_F(ZealandTest, TestConeView)
     Vector3 center({1.0,5.0,7.0});
     Vector3 dir({1.6,4.9,9.0});
     gte::Normalize(dir);
-    double angle = M_PI/16;
+    Real angle = M_PI/16;
 
 
     RigidView* poly = new ConeView(center,dir,angle);

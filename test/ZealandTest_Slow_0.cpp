@@ -40,7 +40,7 @@ TEST_F(ZealandTest, TestRefine)
 
     // Define sphere of radius 1/3
     Vector3 center({0.0,0.0,0.0});
-    double radius = 1/3;
+    Real radius = 1/3;
     Sphere3 sphere(center,radius);
 
     // Define coverage object
@@ -70,8 +70,8 @@ TEST_F(ZealandTest, TestGetVolume)
     // Define sphere of radius cbrt(3/4)
     // Volume of resulting sphere should be pi/16
     Vector3 center({0.0,0.0,0.0});
-    double radius = cbrt(3.0/64.0);
-    double volume = (4.0/3.0)*M_PI*pow(radius,3);
+    Real radius = cbrt(3.0/64.0);
+    Real volume = (4.0/3.0)*M_PI*pow(radius,3);
     Sphere3 sphere(center,radius);
 
     // Define coverage object
@@ -80,8 +80,8 @@ TEST_F(ZealandTest, TestGetVolume)
     for (int i = 0; i < 8; i++)
     {
         instance_.refine(coverage, sphere);
-        double full_vol = instance_.getVolume(coverage[1]);
-        double partial_vol = full_vol + instance_.getVolume(coverage[0]);
+        Real full_vol = instance_.getVolume(coverage[1]);
+        Real partial_vol = full_vol + instance_.getVolume(coverage[0]);
         // Full coverage should always be less than actual volume
         EXPECT_LE(full_vol,volume);
         // Full + partial coverage should always be greater than actual volume
@@ -118,8 +118,8 @@ TEST_F(ZealandTest, TestGetVolume_2)
     // Define sphere of radius cbrt(3/4)
     // Volume of resulting sphere should be pi/16
     Vector3 center({0.0,0.0,0.0});
-    double halflength = cbrt(3.0/64.0);
-    double volume = pow(2*halflength,3);
+    Real halflength = cbrt(3.0/64.0);
+    Real volume = pow(2*halflength,3);
     Vector3 min({-halflength,-halflength,-halflength});
     Vector3 max({halflength,halflength,halflength});
     AlignedBox3 box(min, max);
@@ -131,8 +131,8 @@ TEST_F(ZealandTest, TestGetVolume_2)
     for (int i = 0; i < 8; i++)
     {
         instance_.refine(coverage, box);
-        double full_vol = instance_.getVolume(coverage[1]);
-        double partial_vol = full_vol + instance_.getVolume(coverage[0]);
+        Real full_vol = instance_.getVolume(coverage[1]);
+        Real partial_vol = full_vol + instance_.getVolume(coverage[0]);
         // Full coverage should always be less than actual volume
         EXPECT_LE(full_vol,volume);
         // Full + partial coverage should always be greater than actual volume
@@ -165,8 +165,8 @@ TEST_F(ZealandTest, TestCollapse)
     // Define sphere of radius cbrt(3/64)
     // Volume of resulting sphere should be pi/16
     Vector3 center({0.0,0.0,0.0});
-    double radius = cbrt(3.0/64.0);
-    double volume = (4.0/3.0)*M_PI*pow(radius,3);
+    Real radius = cbrt(3.0/64.0);
+    Real volume = (4.0/3.0)*M_PI*pow(radius,3);
     Sphere3 sphere(center,radius);
 
     // Define coverage object

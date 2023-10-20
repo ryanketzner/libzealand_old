@@ -58,7 +58,7 @@ TEST_F(ZealandTest, TestGetCenter)
 {
     // Test bottom-left blocks at each level
     unsigned long block =  1;
-    double expected_coord = 0;
+    Real expected_coord = 0;
     for (int i = 0; i < 21; i++)
     {
         // Increase level of block by 1
@@ -103,8 +103,8 @@ TEST_F(ZealandTest, TestGetAlignedBox)
     block =  (1 << 3);
     box = instance_.getAlignedBox(block);
 
-    double min_coord = 0;
-    double max_coord = .5;
+    Real min_coord = 0;
+    Real max_coord = .5;
     for (int i = 0; i < 20; i++)
     {
         min_coord = min_coord + .25 / pow(2,i);
@@ -133,7 +133,7 @@ TEST_F(ZealandTest, TestCovers)
 {
     // Define sphere
     Vector3 center({0.0,0.0,0.0});
-    double radius = .23;
+    Real radius = .23;
     Sphere3 sphere(center,radius);
 
     // level 2 block
@@ -161,7 +161,7 @@ TEST_F(ZealandTest, TestRefine)
 
     // Define sphere of radius 1/3
     Vector3 center({0.0,0.0,0.0});
-    double radius = 1/3;
+    Real radius = 1/3;
     Sphere3 sphere(center,radius);
 
     // Define coverage object
@@ -191,8 +191,8 @@ TEST_F(ZealandTest, TestGetVolume)
     // Define sphere of radius cbrt(3/4)
     // Volume of resulting sphere should be pi/16
     Vector3 center({0.0,0.0,0.0});
-    double radius = cbrt(3.0/64.0);
-    double volume = (4.0/3.0)*M_PI*pow(radius,3);
+    Real radius = cbrt(3.0/64.0);
+    Real volume = (4.0/3.0)*M_PI*pow(radius,3);
     Sphere3 sphere(center,radius);
 
     // Define coverage object
@@ -201,8 +201,8 @@ TEST_F(ZealandTest, TestGetVolume)
     for (int i = 0; i < 7; i++)
     {
         instance_.refine(coverage, sphere);
-        double full_vol = instance_.getVolume(coverage[1]);
-        double partial_vol = full_vol + instance_.getVolume(coverage[0]);
+        Real full_vol = instance_.getVolume(coverage[1]);
+        Real partial_vol = full_vol + instance_.getVolume(coverage[0]);
         // Full coverage should always be less than actual volume
         EXPECT_LE(full_vol,volume);
         // Full + partial coverage should always be greater than actual volume
@@ -236,8 +236,8 @@ TEST_F(ZealandTest, TestGetArea)
     // Define circle of radius cbrt(3/4)
     // Volume of resulting sphere should be pi/16
     Vector3 center({0.0,0.0,0.0});
-    double radius = cbrt(3.0/64.0);
-    double area = M_PI*pow(radius,2);
+    Real radius = cbrt(3.0/64.0);
+    Real area = M_PI*pow(radius,2);
     Sphere3 sphere(center,radius);
 
     // Define coverage object
@@ -249,8 +249,8 @@ TEST_F(ZealandTest, TestGetArea)
         Blockset partial_cov_area = instance_.alignedSlice(coverage[0],0,0.0);
         Blockset full_cov_area = instance_.alignedSlice(coverage[1],0,0.0);
 
-        double full_area = instance_.getArea(full_cov_area,1,2);
-        double partial_area = full_area + instance_.getArea(partial_cov_area,1,2);
+        Real full_area = instance_.getArea(full_cov_area,1,2);
+        Real partial_area = full_area + instance_.getArea(partial_cov_area,1,2);
 
         // Full coverage should always be less than actual volume
         EXPECT_LE(full_area,area);
@@ -280,8 +280,8 @@ TEST_F(ZealandTest, TestGetVolume_2)
     // Define sphere of radius cbrt(3/4)
     // Volume of resulting sphere should be pi/16
     Vector3 center({0.0,0.0,0.0});
-    double halflength = cbrt(3.0/64.0);
-    double volume = pow(2*halflength,3);
+    Real halflength = cbrt(3.0/64.0);
+    Real volume = pow(2*halflength,3);
     Vector3 min({-halflength,-halflength,-halflength});
     Vector3 max({halflength,halflength,halflength});
     AlignedBox3 box(min, max);
@@ -293,8 +293,8 @@ TEST_F(ZealandTest, TestGetVolume_2)
     for (int i = 0; i < 7; i++)
     {
         instance_.refine(coverage, box);
-        double full_vol = instance_.getVolume(coverage[1]);
-        double partial_vol = full_vol + instance_.getVolume(coverage[0]);
+        Real full_vol = instance_.getVolume(coverage[1]);
+        Real partial_vol = full_vol + instance_.getVolume(coverage[0]);
         // Full coverage should always be less than actual volume
         EXPECT_LE(full_vol,volume);
         // Full + partial coverage should always be greater than actual volume
@@ -427,8 +427,8 @@ TEST_F(ZealandTest, TestCollapse)
     // Define sphere of radius cbrt(3/64)
     // Volume of resulting sphere should be pi/16
     Vector3 center({0.0,0.0,0.0});
-    double radius = cbrt(3.0/64.0);
-    double volume = (4.0/3.0)*M_PI*pow(radius,3);
+    Real radius = cbrt(3.0/64.0);
+    Real volume = (4.0/3.0)*M_PI*pow(radius,3);
     Sphere3 sphere(center,radius);
 
     // Define coverage object
@@ -529,13 +529,13 @@ TEST_F(ZealandTest, TestToIntervalBounds)
     // A somewhat arbitrary set of blocks 
     // smallest block is level 2
     Blockset blockset({0b1000,0b1000000,0b1000001,0b1000001001,0b1000001010,0b1000101101});
-    double volume = instance_.getVolume(blockset);
+    Real volume = instance_.getVolume(blockset);
 
     Rangeset ranges = toIntervalBounds(blockset);
 
-    double block_len = .125;
-    double block_vol = pow(.125,3);
-    double vol = 0;
+    Real block_len = .125;
+    Real block_vol = pow(.125,3);
+    Real vol = 0;
     for (int i = 0; i < ranges.size() - 1; i = i + 2)
     {
         int num = (ranges[i+1].first - ranges[i].first) + 1;
@@ -551,12 +551,12 @@ TEST_F(ZealandTest, TestToIntervalBounds)
 TEST_F(ZealandTest, TestCollapse_2)
 {
     Blockset blockset({0b1000,0b1000000,0b1000001,0b1000001001,0b1000001010,0b1000101101});
-    double volume = instance_.getVolume(blockset);
+    Real volume = instance_.getVolume(blockset);
 
     Rangeset ranges = toIntervalBounds(blockset);
 
     Blockset collapsed = collapse(ranges);
-    double collapsed_volume = instance_.getVolume(collapsed); 
+    Real collapsed_volume = instance_.getVolume(collapsed); 
 
     EXPECT_EQ(volume,collapsed_volume);
 }
@@ -580,9 +580,9 @@ TEST_F(ZealandTest, TestRefine_3)
     Vector3 center1({0.0,0.0,0.0});
     Vector3 center2({.1,.1,.1});
 
-    double radius1 = .05;
-    double radius2 = .25;
-    double radius3 = .005;
+    Real radius1 = .05;
+    Real radius2 = .25;
+    Real radius3 = .005;
 
     VolumeFOV* ltas = new GTEFOV<Sphere3>(Sphere3(center1,radius1));
     VolumeFOV* utas = new GTEFOV<Sphere3>(Sphere3(center1,radius2));

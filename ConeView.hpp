@@ -12,7 +12,7 @@ public:
 
     // I think in this case, direction will always be aligned with the sensor frame Z-axis
     // with sensor orientation represented by the sensor to body matrix
-    ConeView(Vector3 center, Vector3 direction, double angle) :
+    ConeView(Vector3 center, Vector3 direction, Real angle) :
     cone(Ray3(center, direction), angle),
     direction(direction)
     {
@@ -61,10 +61,10 @@ public:
         return true;
     }
 
-    void updatePose(double x, double y, double z,
-                    double r1c1, double r1c2, double r1c3, 
-                    double r2c1, double r2c2, double r2c3, 
-                    double r3c1, double r3c2, double r3c3)
+    void updatePose(Real x, Real y, Real z,
+                    Real r1c1, Real r1c2, Real r1c3, 
+                    Real r2c1, Real r2c2, Real r2c3, 
+                    Real r3c1, Real r3c2, Real r3c3)
     {
         // Update position
         Vector3 center({x,y,z});
@@ -84,7 +84,7 @@ protected:
     // In sensor frame
     Vector3 direction;
 
-    gte::TIQuery<double,AlignedBox3,Cone3> query;
+    gte::TIQuery<Real,AlignedBox3,Cone3> query;
 };
 }
 

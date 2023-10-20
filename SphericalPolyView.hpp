@@ -33,10 +33,10 @@ class SphericalPolyView : public RigidView
             normals.push_back(n4);
 
             // Compute plane constants
-            double c1 = gte::Dot(n1,center);
-            double c2 = gte::Dot(n2,center);
-            double c3 = gte::Dot(n3,center);
-            double c4 = gte::Dot(n4,center);
+            Real c1 = gte::Dot(n1,center);
+            Real c2 = gte::Dot(n2,center);
+            Real c3 = gte::Dot(n3,center);
+            Real c4 = gte::Dot(n4,center);
 
             planes.push_back({n1,c1});
             planes.push_back({n2,c1});
@@ -56,7 +56,7 @@ class SphericalPolyView : public RigidView
 
         bool intersects (const AlignedBox3& box) override
         {
-            gte::TIQuery<double,Ray3,AlignedBox3> query;
+            gte::TIQuery<Real,Ray3,AlignedBox3> query;
             for (int i = 0; i < rays.size(); i++)
             {
                 if (query(rays[i], box).intersect)
@@ -115,12 +115,12 @@ class SphericalPolyView : public RigidView
         }
 
         // x, y, z should be inertial coordinates
-        void updatePosition(double x, double y, double z)
+        void updatePosition(Real x, Real y, Real z)
         {
             center = Vector3 ({x,y,z});
             for (int i = 0; i < planes.size(); i++)
             {
-                double c = gte::Dot(planes[i].normal,center);
+                Real c = gte::Dot(planes[i].normal,center);
 
                 planes[i].constant = c;
                 rays[i].origin = center;
@@ -128,9 +128,9 @@ class SphericalPolyView : public RigidView
         }
 
         // Must call update orientation before calling update position!
-        void updateOrientation(double r1c1, double r1c2, double r1c3, 
-                               double r2c1, double r2c2, double r2c3, 
-                               double r3c1, double r3c2, double r3c3)
+        void updateOrientation(Real r1c1, Real r1c2, Real r1c3, 
+                               Real r2c1, Real r2c2, Real r2c3, 
+                               Real r3c1, Real r3c2, Real r3c3)
         {
             // sensor to inertial change of basis matrix
             Matrix3x3 R_NS({r1c1, r1c2, r1c3, r2c1, r2c2, r2c3, r3c1, r3c2, r3c3});
@@ -139,7 +139,7 @@ class SphericalPolyView : public RigidView
             {
                 // Update halfspace normals and c
                 Vector3 inertial_normal = R_NS*normals[i];
-                double c = gte::Dot(inertial_normal,center);
+                Real c = gte::Dot(inertial_normal,center);
                 planes[i].constant = c;
                 planes[i].normal = inertial_normal;
 
@@ -149,10 +149,10 @@ class SphericalPolyView : public RigidView
             }
         }
 
-        void updatePose(double x, double y, double z,
-                        double r1c1, double r1c2, double r1c3, 
-                        double r2c1, double r2c2, double r2c3, 
-                        double r3c1, double r3c2, double r3c3)
+        void updatePose(Real x, Real y, Real z,
+                        Real r1c1, Real r1c2, Real r1c3, 
+                        Real r2c1, Real r2c2, Real r2c3, 
+                        Real r3c1, Real r3c2, Real r3c3)
         {
             // sensor to inertial change of basis matrix
             Matrix3x3 R_NS({r1c1, r1c2, r1c3, r2c1, r2c2, r2c3, r3c1, r3c2, r3c3});
@@ -162,7 +162,7 @@ class SphericalPolyView : public RigidView
             {
                 // Update halfspace normals and c
                 Vector3 inertial_normal = R_NS*normals[i];
-                double c = gte::Dot(inertial_normal,center);
+                Real c = gte::Dot(inertial_normal,center);
                 planes[i].constant = c;
                 planes[i].normal = inertial_normal;
 

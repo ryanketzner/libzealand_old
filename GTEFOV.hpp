@@ -48,7 +48,7 @@ class GTEFOV : public VolumeFOV
     protected:
 
         GTEPrimative shape;
-        gte::TIQuery<double,AlignedBox3,GTEPrimative> query;
+        gte::TIQuery<Real,AlignedBox3,GTEPrimative> query;
 };
 }
 

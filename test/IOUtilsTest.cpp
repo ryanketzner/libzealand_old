@@ -52,13 +52,13 @@ TEST(IOUtils, test_print_blockset)
 {
   std::string filename = std::string(PROJECT_ROOT_DIR) + "/build/test/output/blockset.csv";
 
-  const double scale = 10.0;
+  const Real scale = 10.0;
   Zealand octree(scale);
 
   Vector3 center({0.0,0.0,0.0});
   Vector3 dir({1.0,0.0,0.0});
-  double radius = 3.0;
-  double x_slice = .01;
+  Real radius = 3.0;
+  Real x_slice = .01;
 
   std::vector<VolumeFOV*> shapes;
   std::vector<VolumeFOV*> not_shapes;

@@ -11,17 +11,17 @@ class Zealand
 {
     public:
 
-        Zealand(double scale) : 
+        Zealand(Real scale) : 
         Zealand (scale, scale, scale)
         {
         }
 
-        Zealand(double scale_x, double scale_y, double scale_z) :
+        Zealand(Real scale_x, Real scale_y, Real scale_z) :
         scale_x(scale_x),
         scale_y(scale_y),
         scale_z(scale_z)
         {
-            double scales[3] = {scale_x, scale_y, scale_z};
+            Real scales[3] = {scale_x, scale_y, scale_z};
             for(int i = 0; i < 3; i++)
             {
             // Pre-generate the block sizes at each level
@@ -202,7 +202,7 @@ class Zealand
         }
 
         // Watch out for arithmetic precision errors!
-        Blockset alignedSlice(const Blockset& blocks, int axis, double value) const
+        Blockset alignedSlice(const Blockset& blocks, int axis, Real value) const
         {
             Blockset sliced_blocks;
 
@@ -217,7 +217,7 @@ class Zealand
             return sliced_blocks;
         }
 
-        Blockset alignedLeq(const Blockset& blocks, int axis, double value) const
+        Blockset alignedLeq(const Blockset& blocks, int axis, Real value) const
         {
             Blockset result;
 
@@ -237,7 +237,7 @@ class Zealand
         {
             Blockset new_partial;
 
-            gte::TIQuery<double,AlignedBox3,Shape> query;
+            gte::TIQuery<Real,AlignedBox3,Shape> query;
 
             // Loop over each partially covered block
             for (int i = 0; i < coverage[0].size(); i++)
@@ -292,9 +292,9 @@ class Zealand
             libmorton::morton3D_64_decode(block, x, y, z);
 
             int blocks_dim = getBlocksDim(level);
-            double block_size_x = scale_x/blocks_dim;
-            double block_size_y = scale_y/blocks_dim;
-            double block_size_z = scale_z/blocks_dim;
+            Real block_size_x = scale_x/blocks_dim;
+            Real block_size_y = scale_y/blocks_dim;
+            Real block_size_z = scale_z/blocks_dim;
 
             Vector3 min({x*block_size_x - scale_x/2, y*block_size_y - scale_y/2, z*block_size_z - scale_z/2});
             Vector3 max({min[0] + block_size_x, min[1] + block_size_y, min[2] + block_size_z});
@@ -311,11 +311,11 @@ class Zealand
         //     libmorton::morton3D_64_decode(block, x, y, z);
 
         //     int blocks_dim = getBlocksDim(level);
-        //     double block_size_x = scale_x/blocks_dim;
-        //     double block_size_y = scale_y/blocks_dim;
-        //     double block_size_z = scale_z/blocks_dim;
+        //     Real block_size_x = scale_x/blocks_dim;
+        //     Real block_size_y = scale_y/blocks_dim;
+        //     Real block_size_z = scale_z/blocks_dim;
 
-        //     double center_x, center_y, center_z;
+        //     Real center_x, center_y, center_z;
         //     center_x = (x*block_size_x + block_size_x/2) - scale_x/2;
         //     center_y = (z*block_size_y + block_size_y/2) - scale_y/2;
         //     center_z = (z*block_size_z + block_size_z/2) - scale_z/2;
@@ -332,9 +332,9 @@ class Zealand
             libmorton::morton3D_64_decode(block, x, y, z);
 
             int blocks_dim = getBlocksDim(level);
-            double block_size_x = scale_x/blocks_dim;
-            double block_size_y = scale_y/blocks_dim;
-            double block_size_z = scale_z/blocks_dim;
+            Real block_size_x = scale_x/blocks_dim;
+            Real block_size_y = scale_y/blocks_dim;
+            Real block_size_z = scale_z/blocks_dim;
 
             Vector3 center({x*block_size_x - scale_x/2 + block_size_x/2, 
                             y*block_size_y - scale_y/2 + block_size_y/2,
@@ -343,9 +343,9 @@ class Zealand
             return center;
         }
 
-        double getArea(const Blockset& region, int axis_1, int axis_2) const
+        Real getArea(const Blockset& region, int axis_1, int axis_2) const
         {
-            double area = 0;
+            Real area = 0;
             for (int i = 0; i < region.size(); i++)
             {
                 int level = getLevel(region[i]);
@@ -354,28 +354,36 @@ class Zealand
             return area;
         }
 
-        double getVolume(const Blockset& region) const
+        Real getVolume(const Blockset& region) const
         {
             if (region.size() == 0)
                 return 0;
-
-            double volume = 0;
+            
+            std::array<long,21> counts = {};
+            Real volume = 0.0;
+            int max = 0;
             for (int i = 0; i < region.size(); i++)
             {
                 int level = getLevel(region[i]);
-                volume = volume + block_sizes[0][level] * block_sizes[1][level] * block_sizes[2][level];
+                if (level > max)
+                    max = level;
+                counts[level]++;
             }
+
+            for (int level = 0; level <= max; level++)
+                volume += counts[level]*(block_sizes[0][level] * block_sizes[1][level] * block_sizes[2][level]);
+
             return volume;
         }
 
-        double getVolume(const std::vector<unsigned long>& intervals, int multiplicity) const
+        Real getVolume(const std::vector<unsigned long>& intervals, int multiplicity) const
         {
             if (intervals.size() == 0)
                 return 0;
 
             int level = getLevel(intervals[0]);
-            double volume = 0;
-            double block_volume = block_sizes[0][level] * block_sizes[1][level] * block_sizes[2][level];
+            Real volume = 0;
+            Real block_volume = block_sizes[0][level] * block_sizes[1][level] * block_sizes[2][level];
             for (int i = 0; i < intervals.size() - 1; i += 2)
             {
                 int num_blocks = 1 + intervals[i+1] - intervals[i];
@@ -385,10 +393,10 @@ class Zealand
         }
 
         // Public data members
-        const double scale_x;
-        const double scale_y;
-        const double scale_z;
-        double block_sizes[3][MAX_LEVEL + 1];
+        const Real scale_x;
+        const Real scale_y;
+        const Real scale_z;
+        Real block_sizes[3][MAX_LEVEL + 1];
 
         // std::vector<AlignedBox3> prep_boxes;
         // bool preprocessed = false;

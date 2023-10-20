@@ -42,6 +42,27 @@ namespace IOUtils
 
         return {time,values};
     }
+    
+    // Template parameter is array size.
+    // Takes a single line of a csv string as input. 
+    // Returns an array of doubles
+    template <std::size_t array_size>
+    inline std::array<double,array_size> input_to_doubles(const std::string& line)
+    {
+        std::array<double,array_size> values;
+
+        std::istringstream iss(line);
+        std::string token;
+
+        for (int i = 0; i < array_size; i++)
+        {
+            std::getline(iss, token, ',');
+            double value = std::stod(token);
+            values[i] = value;
+        }
+
+        return values;
+    }
 
     template <std::size_t array_size, std::size_t num_lines>
     inline std::array<std::pair<unsigned int, std::array<double,array_size>>,num_lines> inputs_to_numeric(const std::array<std::string, num_lines>& string_lines)
@@ -96,9 +117,34 @@ namespace IOUtils
         }
     }
 
+    template <typename T>
+    inline void append_line(const std::vector<T>& vec, std::ofstream& ofs)
+    {
+        if (ofs.is_open())
+        {
+            ofs << fmt::format("{}\n", fmt::join(vec, ","));
+        }
+    }
+
     inline void print_blockset(const Zealand& octree, Blockset blocks, std::string filename)
     {
         std::ofstream ofs(filename);
+        std::vector<AlignedBox3> boxes(blocks.size());
+
+        std::transform(blocks.begin(),blocks.end(),boxes.begin(), [&octree](unsigned long block){return octree.getAlignedBox(block);});
+
+
+        for (int i = 0; i < boxes.size(); i++)
+        {
+            AlignedBox3 box = boxes[i];
+            ofs << fmt::format("{},{},{},{},{},{}\n", box.min[0], box.min[1], box.min[2], box.max[0], box.max[1], box.max[2]);
+        }
+
+        ofs.close();
+    }
+
+    inline void print_blockset(const Zealand& octree, Blockset blocks, std::ofstream& ofs)
+    {
         std::vector<AlignedBox3> boxes(blocks.size());
 
         std::transform(blocks.begin(),blocks.end(),boxes.begin(), [&octree](unsigned long block){return octree.getAlignedBox(block);});

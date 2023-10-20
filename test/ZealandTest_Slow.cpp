@@ -26,7 +26,7 @@ class ZealandTest : public ::testing::Test
 TEST_F(ZealandTest, TestZIntervals_Partial)
 {
     Vector3 center({0.0,0.0,0.0});
-    double radius = 5000;
+    Real radius = 5000;
 
 
     Sphere3 sphere_1(center,radius);
@@ -42,7 +42,7 @@ TEST_F(ZealandTest, TestZIntervals_Partial)
     }
     int level = getLevel(initial_1[0][0]);
 
-    double volume_blockset = instance_.getVolume(initial_1[0]);
+    Real volume_blockset = instance_.getVolume(initial_1[0]);
     Rangeset set_1 = toIntervalBounds(initial_1[0]);
     Rangeset set_2 = toIntervalBounds(initial_2[0]);
 
@@ -54,7 +54,7 @@ TEST_F(ZealandTest, TestZIntervals_Partial)
 
     std::vector<std::vector<unsigned long>> multiplicities = toIntervals(combined);
 
-    double volume = instance_.getVolume(multiplicities[1],1);
+    Real volume = instance_.getVolume(multiplicities[1],1);
     EXPECT_EQ(volume_blockset,volume);
 }
 
@@ -65,7 +65,7 @@ TEST_F(ZealandTest, TestZIntervals_Partial)
 TEST_F(ZealandTest, TestZIntervals_Full)
 {
     Vector3 center({0.0,0.0,0.0});
-    double radius = 5000;
+    Real radius = 5000;
 
 
     Sphere3 sphere_1(center,radius);
@@ -80,7 +80,7 @@ TEST_F(ZealandTest, TestZIntervals_Full)
         instance_.refine(initial_2, sphere_2);
     }
 
-    double volume_blockset = instance_.getVolume(initial_1[1]);
+    Real volume_blockset = instance_.getVolume(initial_1[1]);
     Rangeset set_1 = toIntervalBounds(initial_1[1]);
     Rangeset set_2 = toIntervalBounds(initial_2[1]);
 
@@ -92,7 +92,7 @@ TEST_F(ZealandTest, TestZIntervals_Full)
 
     std::vector<std::vector<unsigned long>> multiplicities = toIntervals(combined);
 
-    double volume = instance_.getVolume(multiplicities[1],1);
+    Real volume = instance_.getVolume(multiplicities[1],1);
     EXPECT_EQ(volume_blockset,volume);
 
     //EXPECT_EQ(multiplicities,expected_multiplicities);
@@ -105,7 +105,7 @@ TEST_F(ZealandTest, TestZIntervals_Full)
 TEST_F(ZealandTest, TestZIntervals_Full_2)
 {
     Vector3 center({0.0,0.0,0.0});
-    double radius = 5000;
+    Real radius = 5000;
 
     Sphere3 sphere_1(center,radius);
     Sphere3 sphere_2(center,radius);
@@ -122,7 +122,7 @@ TEST_F(ZealandTest, TestZIntervals_Full_2)
         instance_.refine(initial_3, sphere_3);
     }
 
-    double volume_blockset = instance_.getVolume(initial_1[1]);
+    Real volume_blockset = instance_.getVolume(initial_1[1]);
     Rangeset set_1 = toIntervalBounds(initial_1[1]);
     Rangeset set_2 = toIntervalBounds(initial_2[1]);
     Rangeset set_3 = toIntervalBounds(initial_3[1]);
@@ -135,7 +135,7 @@ TEST_F(ZealandTest, TestZIntervals_Full_2)
 
     std::vector<std::vector<unsigned long>> multiplicities = toIntervals(combined);
 
-    double volume = instance_.getVolume(multiplicities[2],1);
+    Real volume = instance_.getVolume(multiplicities[2],1);
 
     EXPECT_EQ(volume_blockset,volume);
 }
@@ -148,7 +148,7 @@ TEST_F(ZealandTest, TestZIntervals_Full_2)
 TEST_F(ZealandTest, TestRecombine_Full)
 {
     Vector3 center({0.0,0.0,0.0});
-    double radius = 5000;
+    Real radius = 5000;
 
     Sphere3 sphere_1(center,radius);
     Sphere3 sphere_2(center,radius);
@@ -163,7 +163,7 @@ TEST_F(ZealandTest, TestRecombine_Full)
     }
     int level = getLevel(initial_1[0][0]);
 
-    double volume_blockset = instance_.getVolume(initial_1[1]);
+    Real volume_blockset = instance_.getVolume(initial_1[1]);
     Rangeset set_1 = toIntervalBounds(initial_1[1]);
     Rangeset set_2 = toIntervalBounds(initial_2[1]);
 
@@ -178,7 +178,7 @@ TEST_F(ZealandTest, TestRecombine_Full)
     std::vector<std::vector<unsigned long>> multiplicities = toIntervals(combined);
 
     Blockset recombined_blockset = recombine(multiplicities[1]);
-    double volume = instance_.getVolume(recombined_blockset);
+    Real volume = instance_.getVolume(recombined_blockset);
 
     EXPECT_EQ(volume_blockset,volume);
 }
@@ -190,7 +190,7 @@ TEST_F(ZealandTest, TestRecombine_Full)
 TEST_F(ZealandTest, TestRecombine_Partial)
 {
     Vector3 center({0.0,0.0,0.0});
-    double radius = 5000;
+    Real radius = 5000;
 
     Sphere3 sphere_1(center,radius);
     Sphere3 sphere_2(center,radius);
@@ -204,7 +204,7 @@ TEST_F(ZealandTest, TestRecombine_Partial)
         instance_.refine(initial_2, sphere_2);
     }
 
-    double volume_blockset = instance_.getVolume(initial_1[0]);
+    Real volume_blockset = instance_.getVolume(initial_1[0]);
     Rangeset set_1 = toIntervalBounds(initial_1[0]);
     Rangeset set_2 = toIntervalBounds(initial_2[0]);
 
@@ -217,7 +217,7 @@ TEST_F(ZealandTest, TestRecombine_Partial)
     std::vector<std::vector<unsigned long>> multiplicities = toIntervals(combined);
 
     Blockset recombined_blockset = recombine(multiplicities[1]);
-    double volume = instance_.getVolume(recombined_blockset);
+    Real volume = instance_.getVolume(recombined_blockset);
 
     EXPECT_EQ(volume_blockset,volume);
 }
@@ -229,7 +229,7 @@ TEST_F(ZealandTest, TestRecombine_Partial)
 TEST_F(ZealandTest, TestRecombine_Full_2)
 {
     Vector3 center({0.0,0.0,0.0});
-    double radius = 5000;
+    Real radius = 5000;
 
     Sphere3 sphere_1(center,radius);
     Sphere3 sphere_2(center,radius);
@@ -246,7 +246,7 @@ TEST_F(ZealandTest, TestRecombine_Full_2)
         instance_.refine(initial_3, sphere_3);
     }
 
-    double volume_blockset = instance_.getVolume(initial_1[1]);
+    Real volume_blockset = instance_.getVolume(initial_1[1]);
     Rangeset set_1 = toIntervalBounds(initial_1[1]);
     Rangeset set_2 = toIntervalBounds(initial_2[1]);
     Rangeset set_3 = toIntervalBounds(initial_3[1]);
@@ -260,7 +260,7 @@ TEST_F(ZealandTest, TestRecombine_Full_2)
     std::vector<std::vector<unsigned long>> multiplicities = toIntervals(combined);
 
     Blockset recombined_blockset = recombine(multiplicities[2]); // 3rd multiplicity
-    double volume = instance_.getVolume(recombined_blockset);
+    Real volume = instance_.getVolume(recombined_blockset);
 
     EXPECT_EQ(volume_blockset,volume);
 }
@@ -270,13 +270,13 @@ TEST_F(ZealandTest, TestRecombine_Full_2)
 TEST_F(ZealandTest, TestHollowSphere)
 {
     Vector3 center({0.0,0.0,0.0});
-    double R = 16000.0/2.0;
-    double r = 13000.0/2.0;
+    Real R = 16000.0/2.0;
+    Real r = 13000.0/2.0;
 
     VolumeFOV* sphere_big = new SphereView(center,R);
     VolumeFOV* sphere_small = new SphereView(center,r);
 
-    double expected_volume = (4.0/3.0)*M_PI*(R*R*R - r*r*r);
+    Real expected_volume = (4.0/3.0)*M_PI*(R*R*R - r*r*r);
 
     std::vector<VolumeFOV*> shapes({sphere_big});
     std::vector<VolumeFOV*> not_shapes({sphere_small});
@@ -284,8 +284,8 @@ TEST_F(ZealandTest, TestHollowSphere)
     int level = 6;
     Coverage cov = instance_.refine(shapes, not_shapes, level);
 
-    double full_volume = instance_.getVolume(cov[1]);
-    double total_volume = full_volume + instance_.getVolume(cov[0]);
+    Real full_volume = instance_.getVolume(cov[1]);
+    Real total_volume = full_volume + instance_.getVolume(cov[0]);
 
     EXPECT_GE(total_volume, expected_volume);
     EXPECT_LE(full_volume,expected_volume);
@@ -304,13 +304,13 @@ TEST_F(ZealandTest, TestHollowSphere)
 TEST_F(ZealandTest, TestHollowSphere_Z)
 {
     Vector3 center({0.0,0.0,0.0});
-    double R = 16000.0/2.0;
-    double r = 13000.0/2.0;
+    Real R = 16000.0/2.0;
+    Real r = 13000.0/2.0;
 
     VolumeFOV* sphere_big = new SphereView(center,R);
     VolumeFOV* sphere_small = new SphereView(center,r);
 
-    double actual_volume = (4.0/3.0)*M_PI*(R*R*R - r*r*r);
+    Real actual_volume = (4.0/3.0)*M_PI*(R*R*R - r*r*r);
 
     std::vector<VolumeFOV*> shapes({sphere_big});
     std::vector<VolumeFOV*> not_shapes({sphere_small});
@@ -318,8 +318,8 @@ TEST_F(ZealandTest, TestHollowSphere_Z)
     int level = 7;
     Coverage cov = instance_.refine(shapes, not_shapes, level);
 
-    double expected_full_volume = instance_.getVolume(cov[1]);
-    double expected_total_volume = expected_full_volume + instance_.getVolume(cov[0]);
+    Real expected_full_volume = instance_.getVolume(cov[1]);
+    Real expected_total_volume = expected_full_volume + instance_.getVolume(cov[0]);
 
     not_shapes.clear();
     Coverage cov_big= instance_.refine(shapes, not_shapes, level);
@@ -332,7 +332,7 @@ TEST_F(ZealandTest, TestHollowSphere_Z)
 
     std::vector<Blockset> mults = octreeMultiplicities({cov_big[1],cov_small_combined});
     // Volume covered with multiplicity one should be the disk.
-    double full_volume = instance_.getVolume(mults[0]);
+    Real full_volume = instance_.getVolume(mults[0]);
 
     EXPECT_EQ(full_volume, expected_full_volume);
 
@@ -349,22 +349,22 @@ TEST_F(ZealandTest, TestSphereSector)
 {
     Vector3 center({0.0,0.0,0.0});
     Vector3 direction({0.0,0.0,1.0});
-    double angle = M_PI/200.0; // .9 degrees
-    double R = 16000.0/2.0;
-    double r = 13000.0/2.0;
+    Real angle = M_PI/200.0; // .9 degrees
+    Real R = 16000.0/2.0;
+    Real r = 13000.0/2.0;
 
     VolumeFOV* sphere = new SphereView(center,R);
     VolumeFOV* cone = new ConeView(center,direction,angle);
     std::vector<VolumeFOV*> shapes({sphere, cone});
     std::vector<VolumeFOV*> not_shapes;
 
-    double expected_volume = (2.0/3.0)*M_PI*R*R*R*(1-cos(angle));
+    Real expected_volume = (2.0/3.0)*M_PI*R*R*R*(1-cos(angle));
 
     int level = 9;
     Coverage cov = instance_.refine(shapes, not_shapes, level);
 
-    double full_volume = instance_.getVolume(cov[1]);
-    double total_volume = full_volume + instance_.getVolume(cov[0]);
+    Real full_volume = instance_.getVolume(cov[1]);
+    Real total_volume = full_volume + instance_.getVolume(cov[0]);
 
     EXPECT_GE(total_volume, expected_volume);
     EXPECT_LE(full_volume,expected_volume);
@@ -375,12 +375,12 @@ TEST_F(ZealandTest, TestSphereSector)
 TEST_F(ZealandTest, TestSphere)
 {
     Vector3 center({0.0,0.0,0.0});
-    double R = 16000.0/2.0;
-    double r = 13000.0/2.0;
+    Real R = 16000.0/2.0;
+    Real r = 13000.0/2.0;
 
 
     Sphere3 sphere_big(center,R);
-    double expected_volume = (4.0/3.0)*M_PI*(R*R*R + r*r*r);
+    Real expected_volume = (4.0/3.0)*M_PI*(R*R*R + r*r*r);
 
     int level = 4;
     Coverage cov = instance_.refine(sphere_big, level);
@@ -389,12 +389,12 @@ TEST_F(ZealandTest, TestSphere)
 TEST_F(ZealandTest, TestPolymorphicSphere)
 {
     Vector3 center({0.0,0.0,0.0});
-    double R = 16000.0/2.0;
-    double r = 13000.0/2.0;
+    Real R = 16000.0/2.0;
+    Real r = 13000.0/2.0;
 
     // Static version
     Sphere3 sphere_big(center,R);
-    double expected_volume = (4.0/3.0)*M_PI*(R*R*R + r*r*r);
+    Real expected_volume = (4.0/3.0)*M_PI*(R*R*R + r*r*r);
 
     int level = 6;
     Coverage cov = instance_.refine(sphere_big, level);

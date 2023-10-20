@@ -26,13 +26,14 @@ namespace libzealand
 {
 
     // Convenience templates
-    using Matrix3x3 = gte::Matrix3x3<double>;
-    using Vector3 = gte::Vector3<double>;
-    using Halfspace3 = gte::Halfspace3<double>;
-    using Ray3 = gte::Ray3<double>;
-    using AlignedBox3 = gte::AlignedBox3<double>;
-    using Sphere3 = gte::Sphere3<double>;
-    using Cone3 = gte::Cone3<double>;
+    using Real = double;
+    using Matrix3x3 = gte::Matrix3x3<Real>;
+    using Vector3 = gte::Vector3<Real>;
+    using Halfspace3 = gte::Halfspace3<Real>;
+    using Ray3 = gte::Ray3<Real>;
+    using AlignedBox3 = gte::AlignedBox3<Real>;
+    using Sphere3 = gte::Sphere3<Real>;
+    using Cone3 = gte::Cone3<Real>;
     using Blockset = std::vector<unsigned long>;
     using Block8 = std::array<unsigned long,8>;
     using Coverage = std::array<Blockset,2>;

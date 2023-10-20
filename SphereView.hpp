@@ -10,7 +10,7 @@ class SphereView : public RigidView
 {
 public:
 
-    SphereView(Vector3 center, double radius) :
+    SphereView(Vector3 center, Real radius) :
     sphere(center, radius)
     {
     }
@@ -84,10 +84,10 @@ public:
         return true;
     }
 
-    void updatePose(double x, double y, double z,
-                    double r1c1, double r1c2, double r1c3, 
-                    double r2c1, double r2c2, double r2c3, 
-                    double r3c1, double r3c2, double r3c3)
+    void updatePose(Real x, Real y, Real z,
+                    Real r1c1, Real r1c2, Real r1c3, 
+                    Real r2c1, Real r2c2, Real r2c3, 
+                    Real r3c1, Real r3c2, Real r3c3)
     {
         Vector3 center({x,y,z});
         sphere.center = center;
@@ -96,7 +96,7 @@ public:
 protected:
 
     Sphere3 sphere;
-    gte::TIQuery<double,AlignedBox3,Sphere3> query;
+    gte::TIQuery<Real,AlignedBox3,Sphere3> query;
 };
 }
 
