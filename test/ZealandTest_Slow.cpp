@@ -178,9 +178,9 @@ TEST_F(ZealandTest, TestRecombine_Full)
     std::vector<std::vector<unsigned long>> multiplicities = toIntervals(combined);
 
     Blockset recombined_blockset = recombine(multiplicities[1]);
-    Real volume = instance_.getVolume(recombined_blockset);
+    Real volume_recombined = instance_.getVolume(recombined_blockset);
 
-    EXPECT_EQ(volume_blockset,volume);
+    EXPECT_EQ(volume_blockset,volume_recombined);
 }
 
 // Check that two identical spheres create only

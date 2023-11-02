@@ -381,9 +381,37 @@ namespace libzealand
         return multiplicities;
     }
 
+    // start and stop must be on same level of morton curve!
+    // I am not sure yet if it is necessary for start and stop to be level-designated
+    inline void interval_to_cells(unsigned long start, unsigned long stop, Blockset& cells)
+    {
+        while (start <= stop)
+        {   
+            // Difference between level of largest possible cell and morton curve level
+            unsigned int diff = (__builtin_ctzl(start) / 3);
+
+	    //unsigned long term = terminator(getLevel(start));
+            //unsigned long dist = (stop^term) - (start^term); // Length of the interval
+            unsigned long len = 1 + stop - start;
+            
+            // Largest power of eight less than or equal to the length of the interval
+            // This measures the level difference between the candidate cell and the z-curve
+            // without alignment considerations
+	    unsigned int largest_pow_8 = (63 - __builtin_clzl(len))/3;
+	    
+	    // Either allignment or the length of the interval will be the limiting factor
+	    unsigned int shift = std::min(largest_pow_8, diff);
+	    unsigned long z_stop = start | set3NBits(shift);
+	    unsigned long block = start >> (shift*3); // parent
+
+            cells.push_back(block);
+            start = ++z_stop;
+        }
+    }
+    
     // start and stop must be level-designated
     // and on same level of morton curve!
-    inline void interval_to_cells(unsigned long start, unsigned long stop, Blockset& cells)
+    inline void interval_to_cells_old(unsigned long start, unsigned long stop, Blockset& cells)
     {
         // Alternatively, can make conditional <= and remove line after looop
         while (start < stop)
@@ -431,7 +459,7 @@ namespace libzealand
             return cells;
 
         // There will be at least as many blocks as there are intervals.
-        cells.reserve(intervals.size());
+        cells.reserve(intervals.size()*2);
 
         for (int i = 0; i < intervals.size() - 1; i += 2)
         {
