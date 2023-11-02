@@ -221,6 +221,23 @@ TEST_F(ZealandTest, TestGetVolume)
     std::cout << coverage[0].size() << std::endl;
 }
 
+TEST_F(ZealandTest, TestGetCentroid)
+{
+    // Define sphere of radius cbrt(3/4)
+    // Volume of resulting sphere should be pi/16
+    Vector3 center({0.05,0.0,0.0});
+    Real radius = cbrt(3.0/64.0);
+    Real volume = (4.0/3.0)*M_PI*pow(radius,3);
+    Sphere3 sphere(center,radius);
+
+    Coverage cov = instance_.refine(sphere, 7);
+    Vector3 centroid = instance_.getCentroid(cov[1]);
+
+    for (int i = 0; i < 3; i++)
+        EXPECT_NEAR(center[0], centroid[0], .00001);
+}
+
+
 TEST_F(ZealandTest, TestGetArea)
 {
     // Define the initial partial blockset as the eight level-0 quadrants

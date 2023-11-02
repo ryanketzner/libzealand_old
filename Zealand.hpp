@@ -427,6 +427,22 @@ class Zealand
             return volume;
         }
 
+        Vector3 getCentroid(const Blockset& region) const
+        {
+            Real vol = getVolume(region);
+
+            Vector3 sum({0.0, 0.0, 0.0});
+
+            for (int i = 0; i < region.size(); i++)
+            {
+                int level = getLevel(region[i]);
+                Real vol_block = (block_sizes[0][level] * block_sizes[1][level] * block_sizes[2][level]);
+                sum = sum + vol_block*getCenter(region[i]);
+            }
+
+            return sum/vol;
+        }
+
         Real getVolume(const std::vector<unsigned long>& intervals, int multiplicity) const
         {
             if (intervals.size() == 0)
